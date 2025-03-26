@@ -1,0 +1,73 @@
+[project]
+name = "sinapsis-chatbots"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "sinapsis>=0.1.1",
+]
+
+
+[dependency-groups]
+dev = [
+    "ruff>=0.8.3",
+    "pre-commit>=4.0.1",
+]
+[project.optional-dependencies]
+gradio-app = ["gradio>=5.22.0",]
+
+
+
+all = [
+    "sinapsis-chatbots[gradio-app]",
+    "sinapsis-huggingface-transformers>=0.1.0",
+    "sinapsis-llama-cpp[all]",
+]
+
+
+
+[tool.uv.workspace]
+members = ["packages/*"]
+exclude = ["packages/*.egg-info"]
+
+[tool.setuptools]
+packages = { find = { where = ["packages"] } }
+
+
+[[tool.uv.index]]
+url = "https://pypi.sinapsis.tech/"
+
+[tool.uv.sources]
+sinapsis-llama-cpp = { workspace = true }
+
+[tool.ruff]
+lint.select = [
+    "ARG",
+    "BLE",
+    "C4",
+    "E",
+    "F",
+    "FIX",
+    "FLY",
+    "I",
+    "PERF",
+    "PIE",
+    "RUF",
+    "RSE",
+    "SIM",
+    "SLOT",
+    "T10",
+    "T20",
+    "TD",
+    "TID",
+]
+line-length = 120
+
+
+
+[project.urls]
+Homepage = "https://sinapsis.tech"
+Documentation = "https://docs.sinapsis.tech/docs"
+Tutorials = "https://docs.sinapsis.tech/tutorials"
+Repository = "https://github.com/Sinapsis-AI/sinapsis-chatbots.git"

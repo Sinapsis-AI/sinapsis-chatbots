@@ -1,0 +1,35 @@
+agent:
+  name: chat_completion
+
+templates:
+- template_name: InputTemplate
+  class_name: InputTemplate
+  attributes: { }
+
+- template_name: LazyAudioReaderPydub
+  class_name: LazyAudioReaderPydub
+  template_input: InputTemplate
+  attributes:
+    audio_file_path : none
+    source : gradio
+    from_bytes : False
+- template_name : SpeechToTextTransformers-1
+  class_name: 'SpeechToTextTransformers'
+  template_input: LazyAudioReaderPydub
+  attributes:
+      model_path: openai/whisper-small
+      device: cuda
+      pipeline_kwargs:
+        chunk_length_s: 30
+        return_timestamps : word
+        generate_kwargs:
+          return_segments : True
+
+- template_name: OpenAIChat
+  class_name: OpenAIChatWrapper
+  template_input: SpeechToTextTransformers-1
+  attributes:
+    model : gpt-4
+    openai_init:
+      api_key : 'anything'
+    create: {}

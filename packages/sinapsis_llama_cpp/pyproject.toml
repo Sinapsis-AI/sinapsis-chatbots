@@ -1,0 +1,76 @@
+[project]
+name = "sinapsis-llama-cpp"
+version = "0.1.0"
+description = "Package with templates using the LLama-CPP library LLM text completion"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "llama-index-llms-llama-cpp>=0.4.0",
+    "ninja>=1.11.1.3",
+    "sinapsis>=0.1.1",
+]
+[dependency-groups]
+dev = [
+    "ruff>=0.8.3",
+    "pre-commit>=4.0.1",
+]
+
+[project.optional-dependencies]
+
+chatbot = [
+    "gradio>=5.22.0",
+    "llvmlite>=0.44.0",
+    "sinapsis-data-readers[all]>=0.1.0",
+    "sinapsis-langchain-readers[all]>=0.1.0",
+]
+
+all =["sinapsis-llama-cpp[chatbot]"]
+
+
+
+[tool.ruff]
+lint.select = [
+    "ARG",
+    "BLE",
+    "C4",
+    "E",
+    "F",
+    "FIX",
+    "FLY",
+    "I",
+    "PERF",
+    "PIE",
+    "RUF",
+    "RSE",
+    "SIM",
+    "SLOT",
+    "T10",
+    "T20",
+    "TD",
+]
+line-length = 120
+
+[[tool.uv.index]]
+name = 'sinapsis'
+url = "https://pypi.sinapsis.tech/"
+
+[[tool.uv.index]]
+name = "llama-cpp"
+url = "https://abetlen.github.io/llama-cpp-python/whl/cu124/"
+
+[[tool.uv.index]]
+name = "llama-index-llms-llama-cpp"
+url = "https://abetlen.github.io/llama-cpp-python/whl/cu124/"
+
+
+
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project.urls]
+Homepage = "https://sinapsis.tech"
+Documentation = "https://docs.sinapsis.tech/docs"
+Tutorials = "https://docs.sinapsis.tech/tutorials"
+Repository = "https://github.com/Sinapsis-AI/sinapsis-chatbots.git"

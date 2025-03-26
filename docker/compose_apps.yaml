@@ -1,0 +1,10 @@
+services:
+  sinapsis-simple-chatbot:
+    extends:
+      service: sinapsis-chatbots
+      file: compose.yaml
+    container_name: sinapsis-simple-chatbot
+    volumes:
+      - "../packages/sinapsis_llama_cpp/src/sinapsis_llama_cpp/configs:/app/packages/sinapsis_llama_cpp/src/sinapsis_llama_cpp/configs/"
+      - "../webapps:/app/webapps/"
+    command: python3 webapps/llama_cpp_simple_chatbot.py

@@ -1,8 +1,12 @@
 [project]
 name = "sinapsis-chatbots"
 version = "0.1.0"
-description = "Add your description here"
+description = "Mono repo with packages for text completion tasks"
+authors = [
+    {name = "SinapsisAI", email = "dev@sinapsis.tech"},
+]
 readme = "README.md"
+license = {file = "LICENSE"}
 requires-python = ">=3.10"
 dependencies = [
     "sinapsis>=0.1.1",

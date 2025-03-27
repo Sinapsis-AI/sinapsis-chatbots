@@ -10,7 +10,7 @@ sinapsis-chatbots
 <br>
 </h1>
 
-<h4 align="center">Monorepo with packages to handle different LLM for chatbots</h4>
+<h4 align="center">A comprehensive monorepo for building and deploying AI-driven chatbots with support for multiple LLMs</h4>
 
 <p align="center">
 <a href="#installation">🐍 Installation</a> •
@@ -21,8 +21,7 @@ sinapsis-chatbots
 <a href="#license">🔍 License</a>
 </p>
 
-The `sinapsis-chatbots` module provides a suite of templates and utilities for configuring and running Large Language Model (LLM) applications. It includes predefined templates for chat-based interactions and Retrieval-Augmented Generation (RAG) systems, enabling the straightforward integration with various LLM models for AI-driven tasks.
-
+The `sinapsis-chatbots` module is a powerful toolkit designed to simplify the development of AI-driven chatbots and Retrieval-Augmented Generation (RAG) systems. It provides ready-to-use templates and utilities for configuring and running LLM applications, enabling developers to integrate a wide range of LLM models with ease for natural, intelligent interactions.
 
 <h2 id="installation">🐍 Installation</h2>
 

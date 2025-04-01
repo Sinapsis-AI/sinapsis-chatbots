@@ -50,7 +50,7 @@ templates:
     query_mode: default
     top_k: 4
     keep_before: false
-    system_prompt : ./prompts/test_prompt.txt
+    system_prompt : ./prompts/prompt_code_en.txt
     generic_key:  LLaMAIndexNodeRetriever
 - template_name: EmbeddingNodeGenerator-1
   class_name: CodeEmbeddingNodeGenerator

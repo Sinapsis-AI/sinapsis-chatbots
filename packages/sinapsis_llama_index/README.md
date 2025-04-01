@@ -21,7 +21,7 @@ sinapsis-llama-index
 <a href="#license">🔍 License</a>
 </p>
 
-The `sinapsis-llama-index` module provides a suite of templates to run LLMs with [llama-cpp](https://github.com/ggml-org/llama.cpp).
+The `sinapsis-llama-index` module provides a suite of templates to run LLMs with [llama-index](https://github.com/run-llama/llama_index).
 
 <h2 id="installation">🐍 Installation</h2>
 

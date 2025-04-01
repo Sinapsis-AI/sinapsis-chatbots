@@ -20,8 +20,7 @@ sinapsis-chatbots-base
 <a href="#license">🔍 License</a>
 </p>
 
-The `sinapsis-llama-cpp` module provides a suite of templates to run LLMs with [llama-cpp](https://github.com/ggml-org/llama.cpp).
-
+The `sinapsis-chatbots-base` module provides core functionality for llm chat completion tasks
 <h2 id="installation">🐍 Installation</h2>
 
 

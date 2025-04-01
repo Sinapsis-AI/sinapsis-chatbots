@@ -1,0 +1,74 @@
+agent:
+  name: chat_completion_rag_with_context
+  description: Agent to run a chatbot fed with content from a database and added in the query
+templates:
+- template_name: AgentInput
+  class_name: InputTemplate
+  attributes: {}
+- template_name: LazyAudioReaderPydub
+  class_name: LazyAudioReaderPydub
+  template_input: AgentInput
+  attributes:
+    audio_file_path : none
+    source : gradio
+    from_bytes : False
+- template_name : SpeechToTextTransformers-1
+  class_name: SpeechToTextTransformers
+  template_input: LazyAudioReaderPydub
+  attributes:
+    model_path: "openai/whisper-small"
+    device: "cpu"
+    seed: 1000
+    pipeline_kwargs:
+      chunk_length_s: 30
+    inference_kwargs:
+      return_timestamps: word
+      generate_kwargs:
+        return_segments: True
+- template_name: LLaMAIndexNodeRetriever
+  class_name: LLaMAIndexNodeRetriever
+  template_input: SpeechToTextTransformers-1
+  attributes:
+    embedding_model_name: Snowflake/snowflake-arctic-embed-m-v2.0
+    db_name: sinapsis_db
+    table_name: sinapsis_code_base
+    database_dimension: 768
+    top_k:  4
+    user: postgres
+    password: password
+- template_name: LLaMARAGTextCompletion
+  class_name: LLaMATextCompletionWithContext
+  template_input: LLaMAIndexNodeRetriever
+  attributes:
+    llm_model_name: bartowski/DeepSeek-R1-Distill-Qwen-7B-GGUF
+    llm_model_file: DeepSeek-R1-Distill-Qwen-7B-Q5_K_S.gguf
+    n_ctx: 9000
+    max_tokens: 10000
+    temperature: 0.6
+    n_threads: 10
+    n_gpu_layers: 25
+    query_mode: default
+    top_k: 4
+    keep_before: false
+    system_prompt : ./prompts/test_prompt.txt
+    generic_key:  LLaMAIndexNodeRetriever
+- template_name: EmbeddingNodeGenerator-1
+  class_name: CodeEmbeddingNodeGenerator
+  template_input: LLaMARAGTextCompletion
+  attributes:
+    chunk_size: 512
+    separator: ' '
+    model_name: Snowflake/snowflake-arctic-embed-m-long
+    trust_remote_code: True
+- template_name: InsertNodes-1
+  class_name: LLaMAIndexInsertNodes
+  template_input: EmbeddingNodeGenerator-1
+  attributes:
+    generic_key: EmbeddingNodeGenerator-1
+    user: postgres
+    password: password
+    port: 5432.0
+    host: localhost
+    db_name: sinapsis_db
+    table_name: sinapsis_code_base
+    embedding_dimension: 768

@@ -4,16 +4,16 @@ from typing import cast
 
 from llama_cpp import Llama
 from llama_cpp.llama_types import CreateChatCompletionResponse
+from sinapsis_chatbots_base.helpers.llm_keys import LLMChatKeys
+from sinapsis_chatbots_base.helpers.postprocess_text import postprocess_text
+from sinapsis_chatbots_base.templates.llm_text_completion_base import (
+    LLMTextCompletionAttributes,
+    LLMTextCompletionBase,
+)
 
 from sinapsis_llama_cpp.helpers.llama_init_model import init_llama_model
 from sinapsis_llama_cpp.helpers.llama_keys import (
     LLaMAModelKeys,
-    LLMChatKeys,
-)
-from sinapsis_llama_cpp.helpers.postprocess_text import postprocess_text
-from sinapsis_llama_cpp.templates.llm_text_completion_base import (
-    LLMTextCompletionAttributes,
-    LLMTextCompletionBase,
 )
 
 
@@ -121,6 +121,8 @@ class LLaMATextCompletion(LLMTextCompletionBase):
             str|None: The model's response as a string, or None if no response
                 is generated.
         """
+        self.logger.debug(f"Query is {input_message}")
+
         try:
             chat_completion = self.llm.create_chat_completion(messages=input_message)
         except IndexError:

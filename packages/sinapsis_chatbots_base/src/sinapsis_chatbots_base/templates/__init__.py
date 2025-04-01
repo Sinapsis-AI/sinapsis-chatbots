@@ -2,11 +2,11 @@
 import importlib
 from typing import Callable
 
-_root_lib_path = "sinapsis_llama_cpp.templates"
+_root_lib_path = "sinapsis_chatbots_base.templates"
 
 _template_lookup = {
-    "LLaMATextCompletionWithContext": f"{_root_lib_path}.llama_text_completion_with_context",
-    "LLaMATextCompletion": f"{_root_lib_path}.llama_text_completion",
+    "QueryContextualizeFromText": f"{_root_lib_path}.query_contextualize_from_text",
+    "QueryContextualizeFromFile": f"{_root_lib_path}.query_contextualize_from_file",
 }
 
 

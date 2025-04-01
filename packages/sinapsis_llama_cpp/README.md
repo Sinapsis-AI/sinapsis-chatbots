@@ -49,7 +49,7 @@ with <code>uv</code>:
 ```
  or with raw <code>pip</code>:
 ```bash
-  pip install sinapsis-llama[all] --extra-index-url https://pypi.sinapsis.tech
+  pip install sinapsis-llama-cpp[all] --extra-index-url https://pypi.sinapsis.tech
 ```
 
 
@@ -240,7 +240,7 @@ uv run webapps/llama_cpp_simple_chatbot.py
 export AGENT_CONFIG_PATH=webapps/configs/openai_simple_chat.yaml
 export OPENAI_API_KEY=your_api_key
 ```
-and run step 3 again
+and run step 5 again
 
 6. **The terminal will display the URL to access the webapp, e.g.**:
 

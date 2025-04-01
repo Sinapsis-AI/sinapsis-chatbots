@@ -1,13 +1,12 @@
 [project]
 name = "sinapsis-chatbots"
-version = "0.1.0"
+version = "0.2.0"
 description = "Mono repo with packages for text completion tasks"
 authors = [
     {name = "SinapsisAI", email = "dev@sinapsis.tech"},
 ]
 readme = "README.md"
 license = {file = "LICENSE"}
-requires-python = ">=3.10"
 dependencies = [
     "sinapsis>=0.1.1",
 ]
@@ -19,14 +18,15 @@ dev = [
     "pre-commit>=4.0.1",
 ]
 [project.optional-dependencies]
-gradio-app = ["gradio>=5.22.0",]
+gradio-app = ["gradio>=5.22.0"]
 
 
 
 all = [
     "sinapsis-chatbots[gradio-app]",
-    "sinapsis-huggingface-transformers>=0.1.0",
     "sinapsis-llama-cpp[all]",
+    "sinapsis-chatbots-base[all]",
+    "sinapsis-llama-index[all]",
 ]
 
 
@@ -43,7 +43,9 @@ packages = { find = { where = ["packages"] } }
 url = "https://pypi.sinapsis.tech/"
 
 [tool.uv.sources]
+sinapsis-chatbots-base = { workspace = true }
 sinapsis-llama-cpp = { workspace = true }
+sinapsis-llama-index = { workspace = true }
 
 [tool.ruff]
 lint.select = [

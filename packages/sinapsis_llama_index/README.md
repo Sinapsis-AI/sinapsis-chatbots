@@ -6,30 +6,24 @@
     alt="" width="300">
 </a>
 <br>
-sinapsis-chatbots
+sinapsis-llama-index
 <br>
 </h1>
 
-<h4 align="center">A comprehensive monorepo for building and deploying AI-driven chatbots with support for multiple LLMs</h4>
+<h4 align="center">Package with support for the llama-cpp library to handle text processing </h4>
 
 <p align="center">
 <a href="#installation">🐍 Installation</a> •
-<a href="#packages">📦 Packages</a> •
+<a href="#features">🚀 Features</a> •
 <a href="#example">📚 Usage example</a> •
 <a href="#webapps">🌐 Webapps</a>
 <a href="#documentation">📙 Documentation</a> •
 <a href="#license">🔍 License</a>
 </p>
 
-The `sinapsis-chatbots` module is a powerful toolkit designed to simplify the development of AI-driven chatbots and Retrieval-Augmented Generation (RAG) systems. It provides ready-to-use templates and utilities for configuring and running LLM applications, enabling developers to integrate a wide range of LLM models with ease for natural, intelligent interactions.
+The `sinapsis-llama-index` module provides a suite of templates to run LLMs with [llama-cpp](https://github.com/ggml-org/llama.cpp).
 
 <h2 id="installation">🐍 Installation</h2>
-
-This mono repo has support for the  llama-cpp framework through:
-* <code>sinapsis-chatbots-base</code>
-* <code>sinapsis-llama-cpp</code>
-* <code>sinapsis-llama-index</code>
-
 
 
 Install using your package manager of choice. We encourage the use of <code>uv</code>
@@ -37,80 +31,60 @@ Install using your package manager of choice. We encourage the use of <code>uv</
 Example with <code>uv</code>:
 
 ```bash
-  uv pip install sinapsis-llama-cpp --extra-index-url https://pypi.sinapsis.tech
+  uv pip install sinapsis-llama-index --extra-index-url https://pypi.sinapsis.tech
 ```
  or with raw <code>pip</code>:
 ```bash
-  pip install sinapsis-llama-cpp --extra-index-url https://pypi.sinapsis.tech
+  pip install sinapsis-llama-index --extra-index-url https://pypi.sinapsis.tech
 ```
-> [!NOTE]
-> Change the name of the package accordingly
 
 > [!IMPORTANT]
-> Templates in each package may require extra dependencies. For development, we recommend installing the package with all the optional dependencies:
+> Templates may require extra dependencies. For development, we recommend installing the package with all the optional dependencies:
 >
 
 with <code>uv</code>:
 
 ```bash
-  uv pip install sinapsis-llama-cpp[all] --extra-index-url https://pypi.sinapsis.tech
+  uv pip install sinapsis-llama-index[all] --extra-index-url https://pypi.sinapsis.tech
 ```
  or with raw <code>pip</code>:
 ```bash
-  pip install sinapsis-llama-cpp[all] --extra-index-url https://pypi.sinapsis.tech
+  pip install sinapsis-llama-index[all] --extra-index-url https://pypi.sinapsis.tech
 ```
-> [!NOTE]
-> Change the name of the package accordingly
-
-> [!TIP]
-> You can also install all the packages within this project:
->
-```bash
-  uv pip install sinapsis-chatbots[all] --extra-index-url https://pypi.sinapsis.tech
-```
-<h2 id="packages">📦 Packages</h2>
 
 
-- **Sinapsis Llama CPP**
-
-    Package with support for various llama-index modules for text completion. This includes
-    making calls to llms, processing and generating embeddings and Nodes, etc.
-
-
-
+<h2 id="features">🚀 Features</h2>
+* LLaMATextCompletion: Configures and initializes a chat completion model, supporting LLaMA, Mistral, and other compatible models.
+* QueryContextualizeFromFile: Template that adds a certain context to the query searching for keywords in the Documents
+added in the generic_data field of the DataContainer
+* QueryContextualizeFromText: Template that adds a certain context to the query searching for keywords
+in the ContextKeys dataclass from the helpers.
 > [!TIP]
 > Use CLI command ``` sinapsis info --all-template-names``` to show a list with all the available Template names installed with Sinapsis Data Tools.
 
 > [!TIP]
 > Use CLI command ```sinapsis info --example-template-config TEMPLATE_NAME``` to produce an example Agent config for the Template specified in ***TEMPLATE_NAME***.
 
-For example, for ***LlaMATextCompletion*** use ```sinapsis info --example-template-config LlaMATextCompletion``` to produce the following example config:
+For example, for **CodeEmbeddingNodeGenerator** use ```sinapsis info --example-template-config CodeEmbeddingNodeGenerator``` to produce the following example config:
 
 ```yaml
 agent:
-  name: my_first_chatbot
-  description: Agent with a template to pass a text through a LLM and return a response
+  name: my_test_agent
+  description
 templates:
 - template_name: InputTemplate
   class_name: InputTemplate
   attributes: {}
-- template_name: LLaMATextCompletion
-  class_name: LLaMATextCompletion
+- template_name: CodeEmbeddingNodeGenerator
+  class_name: CodeEmbeddingNodeGenerator
   template_input: InputTemplate
   attributes:
-    llm_model_name: 'bartowski/DeepSeek-R1-Distill-Qwen-7B-GGUF'
-    llm_model_file: 'DeepSeek-R1-Distill-Qwen-7B-Q5_K_S.gguf'
-    n_ctx: 9000
-    max_tokens: 10000
-    role: assistant
-    system_prompt: 'You are an AI expert'
-    chat_format: chatml
-    context_max_len: 6
-    pattern: null
-    keep_before: true
-    temperature: 0.5
-    n_threads: 4
-    n_gpu_layers: 8
+    chunk_size: '512'
+    separator: ' '
+    model_name: Snowflake/snowflake-arctic-embed-m-long
+    trust_remote_code: false
+    programming_language: python
+
 ```
 
 <h2 id="example">📚 Usage example</h2>
@@ -132,20 +106,14 @@ templates:
   template_input: InputTemplate
   attributes:
     text: what is AI?
-- template_name: LLaMATextCompletion
-  class_name: LLaMATextCompletion
-  template_input: TextInput
+- template_name: EmbeddingNodeGenerator-1
+  class_name: CodeEmbeddingNodeGenerator
+  template_input: LLaMARAGTextCompletion
   attributes:
-    llm_model_name: bartowski/DeepSeek-R1-Distill-Qwen-7B-GGUF
-    llm_model_file: DeepSeek-R1-Distill-Qwen-7B-Q5_K_S.gguf
-    n_ctx: 9000
-    max_tokens: 10000
-    temperature: 0.7
-    n_threads: 8
-    n_gpu_layers: 29
-    chat_format: chatml
-    system_prompt : "You are a python and AI agents expert and you provided reasoning behind every answer you give."
-    keep_before: True
+    chunk_size: 512
+    separator: ' '
+    model_name: Snowflake/snowflake-arctic-embed-m-long
+    trust_remote_code: True
 ```
 </details>
 <h2 id="webapps">🌐 Webapps</h2>
@@ -176,19 +144,18 @@ cd sinapsis-chatbots
 ```bash
 docker compose -f docker/compose.yaml build
 ```
-2. **Start the container**
+2. **Start the POSTGRES service**:
 ```bash
-docker compose -f docker/compose_apps.yaml up sinapsis-simple-chatbot -d
+docker compose -f docker/compose_db.yaml up --build
 ```
-2. Check the status:
-```bash
-docker logs -f sinapsis-simple-chatbot
-```
-**NOTE**: You can also deploy the service for the RAG chatbot using
+3. **Start the container**
 ```bash
 docker compose -f docker/compose_apps.yaml up sinapsis-rag-chatbot -d
 ```
-
+4. Check the status:
+```bash
+docker logs -f sinapsis-rag-chatbot
+```
 3. The logs will display the URL to access the webapp, e.g.,:
 ```bash
 Running on local URL:  http://127.0.0.1:7860
@@ -199,22 +166,11 @@ Running on local URL:  http://127.0.0.1:7860
 docker compose -f docker/compose_apps.yaml down
 ```
 
-**To use a different chatbot configuration (e.g. OpenAI-based chat), update the `AGENT_CONFIG_PATH` environmental variable to point to the desired YAML file.**
-
-For example, to use OpenAI chat:
-```yaml
-environment:
- AGENT_CONFIG_PATH: webapps/configs/openai_simple_chat.yaml
- OPENAI_API_KEY: your_api_key
-```
-
 </details>
 <details>
 <summary><strong><span style="font-size: 1.25em;">💻  UV</span></strong></summary>
 
 1. Export the environment variable to install the python bindings for llama-cpp
-
-
 
 ```bash
 export CMAKE_ARGS="-DGGML_CUDA=on"
@@ -224,6 +180,7 @@ export FORCE_CMAKE="1"
 ```bash
 export CUDACXX=$(command -v nvcc)
 ```
+
 3. **Create the virtual environment and sync dependencies:**
 
 ```bash
@@ -237,21 +194,9 @@ uv pip install sinapsis-chatbots[all] --extra-index-url https://pypi.sinapsis.te
 
 5. **Run the webapp**:
 ```bash
-uv run webapps/llama_cpp_simple_chatbot.py
-```
-
-**NOTE:** To use OpenAI for the simple chatbot, set your API key and specify the correct configuration file
-```bash
-export AGENT_CONFIG_PATH=webapps/configs/openai_simple_chat.yaml
-export OPENAI_API_KEY=your_api_key
-```
-and run step 5 again
-
-**NOTE**: You can also deploy the service for the RAG chatbot using
-
-```bash
 uv run webapps/llama_index_rag_chatbot.py
 ```
+
 6. **The terminal will display the URL to access the webapp, e.g.**:
 
 NOTE: The url can be different, check the output of the terminal

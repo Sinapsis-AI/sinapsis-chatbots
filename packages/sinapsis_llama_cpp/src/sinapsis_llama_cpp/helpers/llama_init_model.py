@@ -7,6 +7,8 @@ from llama_index.llms.llama_cpp import LlamaCPP
 
 from sinapsis_llama_cpp.helpers.llama_keys import LLaMAModelKeys
 
+LLM_MODEL_TYPE = Llama | LlamaCPP
+
 
 def init_llama_model(attributes: dict, model_type: Literal["Llama", "LlamaCPP"] = "LlamaCPP") -> Llama | LlamaCPP:
     """

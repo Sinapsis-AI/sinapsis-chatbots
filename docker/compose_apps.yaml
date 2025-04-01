@@ -8,3 +8,24 @@ services:
       - "../packages/sinapsis_llama_cpp/src/sinapsis_llama_cpp/configs:/app/packages/sinapsis_llama_cpp/src/sinapsis_llama_cpp/configs/"
       - "../webapps:/app/webapps/"
     command: python3 webapps/llama_cpp_simple_chatbot.py
+
+
+  sinapsis-rag-chatbot:
+    extends:
+      service: sinapsis-chatbots
+      file: compose.yaml
+    container_name: sinapsis-rag-chatbot
+    command: python3 webapps/llama_index_rag_chatbot.py
+    depends_on:
+      - postgres
+    environment:
+      FEED_DB_FROM_PDF_PATH: ${FEED_DB_FROM_PDF_PATH}
+      FEED_DB_DEFAULT_PATH: ${FEED_DB_DEFAULT_PATH}
+      AGENT_CONFIG_PATH: /app/packages/sinapsis_llama_index/src/sinapsis_llama_index/configs/llama_index_rag_chat.yaml
+  postgres:
+      extends:
+        file: compose_db.yaml
+        service: postgres
+      volumes:
+        - /var/lib/postgresql/data
+

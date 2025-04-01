@@ -7,4 +7,5 @@ RUN apt-get update && apt-get install -y cuda-toolkit-12-4  ninja-build git && a
 
 COPY . /app/
 WORKDIR /app
-RUN  uv sync --frozen && uv pip install sinapsis-chatbots[all] --extra-index-url https://pypi.sinapsis.tech
+RUN uv sync --frozen && uv pip install sinapsis-chatbots[all] --extra-index-url https://pypi.sinapsis.tech
+RUN uv pip install flash-attn --no-build-isolation --upgrade

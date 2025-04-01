@@ -1,0 +1,53 @@
+agent:
+  name: database_feeder
+  description: agent to feed a PGVector database with content from the official Sinapsis repositories
+templates:
+- template_name: InputTemplate
+  class_name: InputTemplate
+  attributes: {}
+- template_name: Loader-sinapsis-core
+  class_name: WebBaseLoaderWrapper
+  template_input: InputTemplate
+  attributes:
+    add_document_as_text_packet: 0
+    webbaseloader_init:
+      web_paths: https://docs.sinapsis.tech
+- template_name: GitLoader-sinapsis
+  class_name: GitLoaderWrapper
+  template_input: Loader-sinapsis-core
+  attributes:
+    add_document_as_text_packet: 0
+    gitloader_init:
+      repo_path: gitloaders/sinapsis
+      clone_url: git@github.com:Sinapsis-ai/sinapsis.git
+      branch : main
+- template_name: GitLoader-sinapsis-data
+  class_name: GitLoaderWrapper
+  template_input: GitLoader-sinapsis
+  attributes:
+    add_document_as_text_packet: 0
+    gitloader_init:
+      repo_path: gitloaders/sinapsis-data-tools
+      clone_url: git@github.com:Sinapsis-ai/sinapsis-data-tools.git
+      branch : main
+- template_name: EmbeddingNodeGenerator-1
+  class_name: CodeEmbeddingNodeGenerator
+  template_input: GitLoader-sinapsis
+  attributes:
+    generic_keys: [Loader-sinapsis-core, GitLoader-sinapsis, GitLoader-sinapsis-data]
+    chunk_size: 256
+    separator: ' '
+    model_name: Snowflake/snowflake-arctic-embed-xs
+    trust_remote_code: True
+- template_name: PostgresInsertNodes-1
+  class_name: LLaMAIndexInsertNodes
+  template_input: EmbeddingNodeGenerator-1
+  attributes:
+    generic_key: EmbeddingNodeGenerator-1
+    user: postgres
+    password: password
+    port: 5432.0
+    host: localhost
+    db_name: sinapsis_db
+    table_name: sinapsis_code_s
+    embedding_dimension: 384

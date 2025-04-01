@@ -1,12 +1,10 @@
 agent:
   name: chat_completion
   description: Agent with a chatbot that makes a call to the LLM model using a context uploaded from a file
-
 templates:
 - template_name: InputTemplate
   class_name: InputTemplate
   attributes: { }
-
 - template_name: PythonLoader-agent
   class_name: PythonLoaderWrapper
   template_input: InputTemplate
@@ -14,7 +12,6 @@ templates:
     add_document_as_text_packet: 0
     pythonloader_init:
       file_path: .venv/lib/python3.10/site-packages/sinapsis_core/agent/agent.py
-
 - template_name: PythonLoader-template
   class_name: PythonLoaderWrapper
   template_input: PythonLoader-agent
@@ -22,7 +19,6 @@ templates:
     add_document_as_text_packet: 0
     pythonloader_init:
       file_path: .venv/lib/python3.10/site-packages/sinapsis_core/template_base/template.py
-
 - template_name: TextLoader-config
   class_name: TextLoaderWrapper
   template_input: PythonLoader-template
@@ -30,7 +26,6 @@ templates:
     add_document_as_text_packet: 0
     textloader_init:
       file_path: .venv/lib/python3.10/site-packages/sinapsis/configs/hello_world_agent.yml
-
 - template_name: LazyAudioReaderPydub
   class_name: LazyAudioReaderPydub
   template_input: TextLoader-config
@@ -51,14 +46,12 @@ templates:
       return_timestamps: word
       generate_kwargs:
         return_segments: True
-
 - template_name: QueryContextualizerFromFile
   class_name: QueryContextualizeFromFile
   template_input: SpeechToTextTransformers-1
   attributes:
     keywords: [template, agent, config]
     generic_keys: [PythonLoader-agent, PythonLoader-template, TextLoader-config]
-
 - template_name: LLaMATextCompletion
   class_name: LLaMATextCompletion
   template_input: QueryContextualizerFromFile

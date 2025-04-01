@@ -1,0 +1,34 @@
+agent:
+  name: database_feeder_from_pdf
+  description: Agent to feed a PGVector database using a PDF as source
+templates:
+- template_name: InputTemplate
+  class_name: InputTemplate
+  attributes: {}
+- template_name: LangchainPDFReader
+  class_name: PyPDFLoaderWrapper
+  template_input: InputTemplate
+  attributes:
+    pypdfloader_init:
+      file_path : ./artifacts/sinapsis.pdf
+- template_name: EmbeddingNodeGenerator-1
+  class_name: EmbeddingNodeGenerator
+  template_input: LangchainPDFReader
+  attributes:
+    generic_keys: [LangchainPDFReader]
+    chunk_size: 512
+    separator: ' '
+    model_name: nomic-ai/nomic-embed-text-v1.5
+    trust_remote_code: True
+- template_name: InsertNodes-1
+  class_name: LLaMAIndexInsertNodes
+  template_input: EmbeddingNodeGenerator-1
+  attributes:
+    generic_key: EmbeddingNodeGenerator-1
+    user: postgres
+    password: password
+    port: 5432.0
+    host: localhost
+    db_name: sinapsis_db
+    table_name: sinapsis_code_m
+    embedding_dimension: 768

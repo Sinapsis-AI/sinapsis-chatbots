@@ -10,7 +10,7 @@ sinapsis-llama-index
 <br>
 </h1>
 
-<h4 align="center">Package with support for the llama-cpp library to handle text processing </h4>
+<h4 align="center">Package with support for the llama-index library to handle text processing </h4>
 
 <p align="center">
 <a href="#installation">🐍 Installation</a> •

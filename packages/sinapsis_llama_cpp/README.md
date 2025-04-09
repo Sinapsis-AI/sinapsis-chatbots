@@ -29,6 +29,13 @@ To use them, install the dependency (if you have not installed sinapsis-llama-cp
 ```bash
   uv pip install sinapsis-llama-cpp[llama-four] --extra-index-url https://pypi.sinapsis.tech
 ```
+
+You need a HuggingFace token. See the [official instructions](https://huggingface.co/docs/hub/security-tokens)
+and set it using
+```bash
+  export HF_TOKEN=<token-provided-by-hf>
+```
+
 and test it through the cli or the webapp by changing the AGENT_CONFIG_PATH
 
 > [!NOTE]

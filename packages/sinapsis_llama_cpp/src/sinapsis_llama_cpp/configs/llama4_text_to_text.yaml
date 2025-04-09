@@ -1,0 +1,25 @@
+agent:
+  name: chat_completion
+  description: Agent with support for LLama4 model for text-to-text
+
+templates:
+- template_name: InputTemplate
+  class_name: InputTemplate
+  attributes: {}
+- template_name: TextInput
+  class_name: TextInput
+  template_input: InputTemplate
+  attributes:
+    text : what is AI?
+
+- template_name: Llama4
+  class_name: LLama4TextToText
+  template_input: TextInput
+  attributes:
+    system_prompt: 'You are an AI and Python expert and you should reason in every response you provide'
+    llm_model_name: "meta-llama/Llama-4-Scout-17B-16E-Instruct"
+    torch_dtype: "auto"
+    extra_args:
+      max_memory:
+        0: "8GiB"
+        cpu: "10GiB"

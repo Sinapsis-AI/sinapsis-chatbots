@@ -5,6 +5,7 @@ from typing import Callable
 _root_lib_path = "sinapsis_llama_cpp.templates"
 
 _template_lookup = {
+    "LLama4TextToText": f"{_root_lib_path}.llama_4_text_to_text",
     "LLaMATextCompletionWithContext": f"{_root_lib_path}.llama_text_completion_with_context",
     "LLaMATextCompletion": f"{_root_lib_path}.llama_text_completion",
 }

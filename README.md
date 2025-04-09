@@ -23,13 +23,28 @@ sinapsis-chatbots
 
 The `sinapsis-chatbots` module is a powerful toolkit designed to simplify the development of AI-driven chatbots and Retrieval-Augmented Generation (RAG) systems. It provides ready-to-use templates and utilities for configuring and running LLM applications, enabling developers to integrate a wide range of LLM models with ease for natural, intelligent interactions.
 
+
+> [!IMPORTANT]
+> We now include support for Llama4 models!
+
+To use them, install the dependency (if you have not installed sinapsis-llama-cpp[all])
+```bash
+  uv pip install sinapsis-llama-cpp[llama-four] --extra-index-url https://pypi.sinapsis.tech
+```
+and test it through the cli or the webapp by changing the AGENT_CONFIG_PATH
+
+> [!NOTE]
+> Llama 4 requires large GPUs to run the models.
+> Nonetheless, running on smaller consumer-grade GPUs is possible, although a single inference may take hours
+>
+
+
 <h2 id="installation">🐍 Installation</h2>
 
 This mono repo has support for the  llama-cpp framework through:
 * <code>sinapsis-chatbots-base</code>
 * <code>sinapsis-llama-cpp</code>
 * <code>sinapsis-llama-index</code>
-
 
 
 Install using your package manager of choice. We encourage the use of <code>uv</code>

@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-chatbots"
-version = "0.2.0"
+version = "0.3.0"
 description = "Mono repo with packages for text completion tasks"
 authors = [
     {name = "SinapsisAI", email = "dev@sinapsis.tech"},
@@ -18,7 +18,9 @@ dev = [
     "pre-commit>=4.0.1",
 ]
 [project.optional-dependencies]
-gradio-app = ["gradio>=5.22.0"]
+gradio-app = [
+    "sinapsis[webapp]>=0.2.2",
+]
 
 
 
@@ -28,8 +30,6 @@ all = [
     "sinapsis-chatbots-base[all]",
     "sinapsis-llama-index[all]",
 ]
-
-
 
 [tool.uv.workspace]
 members = ["packages/*"]

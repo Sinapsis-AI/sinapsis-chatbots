@@ -22,7 +22,19 @@ sinapsis-llama-cpp
 </p>
 
 The `sinapsis-llama-cpp` module provides a suite of templates to run LLMs with [llama-cpp](https://github.com/ggml-org/llama.cpp).
+> [!IMPORTANT]
+> We now include support for Llama4 models!
 
+To use them, install the dependency (if you have not installed sinapsis-llama-cpp[all])
+```bash
+  uv pip install sinapsis-llama-cpp[llama-four] --extra-index-url https://pypi.sinapsis.tech
+```
+and test it through the cli or the webapp by changing the AGENT_CONFIG_PATH
+
+> [!NOTE]
+> Llama 4 requires large GPUs to run the models.
+> Nonetheless, running on smaller consumer-grade GPUs is possible, although a single inference may take hours
+>
 <h2 id="installation">🐍 Installation</h2>
 
 
@@ -58,7 +70,8 @@ with <code>uv</code>:
 <details>
 <summary id="configuration"><strong><span style="font-size: 1.25em;">🌍 General Attributes</span></strong></summary>
 
-These attributes apply to `LLaMATextCompletion``:
+These attributes apply to `LLaMATextCompletion``
+:
 - `llm_model_name`(Required): Name of the LLM to use.
 - `llm_model_file`(Required): File path to the LLM.
 - `n_ctx`(Required): Maximum context size.
@@ -75,10 +88,16 @@ These attributes apply to `LLaMATextCompletion``:
 - `n_gpu_layers`: Number of LLM layers offloaded to GPU (-1 for all layers, default: 0).
 
 </details>
-* QueryContextualizeFromFile: Template that adds a certain context to the query searching for keywords in the Documents
-added in the generic_data field of the DataContainer
-* QueryContextualizeFromText: Template that adds a certain context to the query searching for keywords
-in the ContextKeys dataclass from the helpers.
+> [!IMPORTANT]
+> We now include support for Llama4 models!
+
+To use them, install the dependency (if you have not installed sinapsis-llama-cpp[all])
+```bash
+  uv pip install sinapsis-llama-cpp[llama-four] --extra-index-url https://pypi.sinapsis.tech
+```
+and test it through the cli or the webapp by changing the AGENT_CONFIG_PATH
+
+
 > [!TIP]
 > Use CLI command ``` sinapsis info --all-template-names``` to show a list with all the available Template names installed with Sinapsis Data Tools.
 
@@ -265,7 +284,7 @@ This project is licensed under the AGPLv3 license, which encourages open collabo
 
 For commercial use, please refer to our [official Sinapsis website](https://sinapsis.tech) for information on obtaining a commercial license.
 
-
+The LLama4TextToText template is licensed under the [official Llama4 license](https://github.com/meta-llama/llama-models/blob/main/models/llama4/LICENSE)
 
 
 

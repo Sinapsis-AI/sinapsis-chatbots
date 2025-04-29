@@ -1,9 +1,10 @@
 [project]
 name = "sinapsis-chatbots-base"
-version = "0.1.0"
+version = "0.1.1"
 description = "Package with base functionality for llm text creation"
 readme = "README.md"
-requires-python = ">=3.10.12"
+requires-python = ">=3.10"
+license-files = ["LICENSE"]
 dependencies = [
     "sinapsis>=0.2.0",
 ]
@@ -43,7 +44,8 @@ url = "https://pypi.sinapsis.tech/"
 [project.optional-dependencies]
 
 chatbot = [
-"sinapsis-huggingface-transformers>=0.1.0"]
+    "sinapsis-huggingface-transformers>=0.1.0",
+]
 
 all = ["sinapsis-chatbots-base[chatbot]"]
 

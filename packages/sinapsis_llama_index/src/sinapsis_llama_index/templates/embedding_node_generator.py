@@ -6,8 +6,8 @@ from llama_index.core.node_parser import SentenceSplitter
 from llama_index.core.schema import Document, TextNode
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from sinapsis_core.data_containers.data_packet import DataContainer
-from sinapsis_core.template_base import (
-    Template,
+from sinapsis_core.template_base import Template
+from sinapsis_core.template_base.base_models import (
     TemplateAttributes,
     TemplateAttributeType,
 )

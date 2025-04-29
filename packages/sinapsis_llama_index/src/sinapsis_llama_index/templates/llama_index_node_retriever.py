@@ -3,7 +3,8 @@ from llama_index.core.schema import QueryBundle
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.vector_stores.postgres import PGVectorStore
 from sinapsis_core.data_containers.data_packet import DataContainer
-from sinapsis_core.template_base import Template, TemplateAttributes, TemplateAttributeType
+from sinapsis_core.template_base import Template
+from sinapsis_core.template_base.base_models import TemplateAttributes, TemplateAttributeType
 from sinapsis_llama_index.helpers.llama_index_pg_retriever import LLaMAIndexPGRetriever, connect_to_table
 
 

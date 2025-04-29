@@ -7,7 +7,7 @@ from sinapsis_chatbots_base.helpers.llm_keys import LLMChatKeys
 from sinapsis_chatbots_base.helpers.postprocess_text import postprocess_text
 from sinapsis_chatbots_base.templates.llm_text_completion_base import LLMTextCompletionAttributes, LLMTextCompletionBase
 from sinapsis_core.data_containers.data_packet import DataContainer, TextPacket
-from sinapsis_core.template_base.template import TemplateAttributeType
+from sinapsis_core.template_base.base_models import TemplateAttributeType
 from transformers import AutoProcessor, Llama4ForConditionalGeneration
 
 

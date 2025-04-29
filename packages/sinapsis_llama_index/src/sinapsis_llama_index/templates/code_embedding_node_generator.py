@@ -2,7 +2,7 @@
 from typing import Literal
 
 from llama_index.core.node_parser import CodeSplitter
-from sinapsis_core.template_base import (
+from sinapsis_core.template_base.base_models import (
     TemplateAttributeType,
 )
 from sinapsis_llama_index.templates.embedding_node_generator import DocumentType, EmbeddingNodeGenerator

@@ -1,0 +1,28 @@
+agent:
+  name: chat_completion
+  description: Agent with support for LLama4 model for text-to-text
+
+templates:
+- template_name: InputTemplate
+  class_name: InputTemplate
+  attributes:
+    {}
+- template_name: ImageReader
+  class_name: FolderImageDatasetCV2
+  template_input: InputTemplate
+  attributes:
+    load_on_init : True
+    data_dir: './artifacts'
+    pattern : 'test_img.png'
+
+- template_name: Llama4
+  class_name: LLama4MultiModal
+  template_input: ImageReader
+  attributes:
+    system_prompt: 'You are an AI and Python expert and you should reason in every response you provide'
+    llm_model_name: "meta-llama/Llama-4-Scout-17B-16E-Instruct"
+    torch_dtype: "auto"
+    extra_args:
+      max_memory:
+        0: "8GiB"
+        cpu: "10GiB"

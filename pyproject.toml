@@ -1,12 +1,12 @@
 [project]
 name = "sinapsis-chatbots"
-version = "0.3.0"
+version = "0.3.1"
 description = "Mono repo with packages for text completion tasks"
 authors = [
     {name = "SinapsisAI", email = "dev@sinapsis.tech"},
 ]
 readme = "README.md"
-license = {file = "LICENSE"}
+license-files = ["LICENSE"]
 dependencies = [
     "sinapsis>=0.1.1",
 ]

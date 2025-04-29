@@ -8,7 +8,7 @@ from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.llms.llama_cpp import LlamaCPP
 from llama_index.vector_stores.postgres import PGVectorStore
 from sinapsis_chatbots_base.helpers.postprocess_text import postprocess_text
-from sinapsis_core.template_base.template import TemplateAttributes, TemplateAttributeType
+from sinapsis_core.template_base.base_models import TemplateAttributes, TemplateAttributeType
 from sinapsis_llama_cpp.helpers.llama_init_model import init_llama_model
 from sinapsis_llama_cpp.templates.llama_text_completion import LLaMATextCompletion, LLaMATextCompletionAttributes
 from sinapsis_llama_index.helpers.llama_index_pg_retriever import LLaMAIndexPGRetriever, connect_to_table

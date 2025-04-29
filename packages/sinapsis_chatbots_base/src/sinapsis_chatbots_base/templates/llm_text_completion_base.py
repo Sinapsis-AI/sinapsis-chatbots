@@ -7,8 +7,8 @@ from pathlib import Path
 from typing import Any, Literal
 
 from sinapsis_core.data_containers.data_packet import DataContainer, TextPacket
-from sinapsis_core.template_base import (
-    Template,
+from sinapsis_core.template_base import Template
+from sinapsis_core.template_base.base_models import (
     TemplateAttributes,
     TemplateAttributeType,
 )
@@ -121,12 +121,12 @@ class LLMTextCompletionBase(Template):
         raise NotImplementedError("Must be implemented by the subclass.")
 
     @abstractmethod
-    def get_response(self, input_message: str | list) -> str | None:
+    def get_response(self, input_message: str | list | dict) -> str | None:
         """
         Generates a response from the model based on the provided text input.
 
         Args:
-            input_message (str | list): The input text or prompt to which the model
+            input_message (str | list | dict): The input text or prompt to which the model
             will respond.
 
         Returns:
@@ -184,12 +184,12 @@ class LLMTextCompletionBase(Template):
             self.context[conv_id].append(message)
 
     @staticmethod
-    def generate_dict_msg(role: str, msg_content: str | None) -> dict:
+    def generate_dict_msg(role: str, msg_content: str | list | None) -> dict:
         """For the provided content, generate a dictionary to be appended as the context
         for the response.
         Args:
             role (str): Role of the message, Can be system, user or assistant
-            msg_content (str | None): Content of the message to be passed to the llm.
+            msg_content (str | list | None): Content of the message to be passed to the llm.
         Returns:
             The dictionary with the key pair values for role and content.
 
@@ -249,6 +249,7 @@ class LLMTextCompletionBase(Template):
             self.logger.debug("End of interaction.")
 
             responses.append(TextPacket(source=self.instance_name, content=response, id=conv_id))
+
         container.texts.extend(responses)
         return container
 

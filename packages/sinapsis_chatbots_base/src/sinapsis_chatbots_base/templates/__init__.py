@@ -5,7 +5,6 @@ from typing import Callable
 _root_lib_path = "sinapsis_chatbots_base.templates"
 
 _template_lookup = {
-    "QueryContextualizeFromText": f"{_root_lib_path}.query_contextualize_from_text",
     "QueryContextualizeFromFile": f"{_root_lib_path}.query_contextualize_from_file",
 }
 

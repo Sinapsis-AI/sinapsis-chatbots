@@ -8,8 +8,10 @@ from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from sinapsis_core.data_containers.data_packet import DataContainer
 from sinapsis_core.template_base import Template
 from sinapsis_core.template_base.base_models import (
+    OutputTypes,
     TemplateAttributes,
     TemplateAttributeType,
+    UIPropertiesMetadata,
 )
 
 DocumentType = str | list[Document] | list[Any]
@@ -45,6 +47,8 @@ class EmbeddingNodeGenerator(Template):
         generic_keys: list[str] | str | None = None
         trust_remote_code: bool = False
         device: str = "cpu"
+
+    UIProperties = UIPropertiesMetadata(category="Embeddings", output_type=OutputTypes.MULTIMODAL)
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         """

@@ -2,9 +2,7 @@
 from typing import Literal
 
 from llama_index.core.node_parser import CodeSplitter
-from sinapsis_core.template_base.base_models import (
-    TemplateAttributeType,
-)
+from sinapsis_core.template_base.base_models import OutputTypes, TemplateAttributeType, UIPropertiesMetadata
 from sinapsis_llama_index.templates.embedding_node_generator import DocumentType, EmbeddingNodeGenerator
 
 language_mapping: dict = {
@@ -43,6 +41,8 @@ class CodeEmbeddingNodeGenerator(EmbeddingNodeGenerator):
         """
 
         programming_language: Literal[tuple(language_mapping)] | None = "python"  # type:ignore[valid-type]
+
+    UIProperties = UIPropertiesMetadata(category="Embeddings", output_type=OutputTypes.MULTIMODAL)
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)

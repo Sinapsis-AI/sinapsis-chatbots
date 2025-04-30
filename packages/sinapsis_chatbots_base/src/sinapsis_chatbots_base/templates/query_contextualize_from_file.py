@@ -2,6 +2,7 @@
 from typing import Any
 
 from sinapsis_core.data_containers.data_packet import DataContainer
+from sinapsis_core.template_base.base_models import OutputTypes, UIPropertiesMetadata
 
 from sinapsis_chatbots_base.templates.query_contextualize import (
     QueryContextualize,
@@ -37,6 +38,8 @@ class QueryContextualizeFromFile(QueryContextualize):
         """
 
         generic_keys: list[str]
+
+    UIProperties = UIPropertiesMetadata(category="Chatbots", output_type=OutputTypes.TEXT)
 
     def retrieve_context(self, keyword: str, context_data: dict | Any) -> str:
         """Retrieve the context associated with the given keyword from the provided

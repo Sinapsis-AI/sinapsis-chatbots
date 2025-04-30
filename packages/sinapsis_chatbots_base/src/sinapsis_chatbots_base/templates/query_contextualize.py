@@ -4,7 +4,7 @@ from typing import Any
 
 from sinapsis_core.data_containers.data_packet import DataContainer
 from sinapsis_core.template_base import Template
-from sinapsis_core.template_base.base_models import TemplateAttributes
+from sinapsis_core.template_base.base_models import OutputTypes, TemplateAttributes, UIPropertiesMetadata
 
 
 class QueryContextualize(Template, abc.ABC):
@@ -18,6 +18,8 @@ class QueryContextualize(Template, abc.ABC):
         """
 
         keywords: list[str]
+
+    UIProperties = UIPropertiesMetadata(category="Chatbots", output_type=OutputTypes.TEXT)
 
     @abc.abstractmethod
     def retrieve_context(self, keyword: str, context_data: dict | Any) -> str:

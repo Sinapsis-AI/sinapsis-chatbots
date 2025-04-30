@@ -4,7 +4,12 @@ from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.vector_stores.postgres import PGVectorStore
 from sinapsis_core.data_containers.data_packet import DataContainer
 from sinapsis_core.template_base import Template
-from sinapsis_core.template_base.base_models import TemplateAttributes, TemplateAttributeType
+from sinapsis_core.template_base.base_models import (
+    OutputTypes,
+    TemplateAttributes,
+    TemplateAttributeType,
+    UIPropertiesMetadata,
+)
 from sinapsis_llama_index.helpers.llama_index_pg_retriever import LLaMAIndexPGRetriever, connect_to_table
 
 
@@ -42,6 +47,8 @@ class LLaMAIndexNodeRetriever(Template):
         trust_remote_code: bool = True
         user: str
         password: str
+
+    UIProperties = UIPropertiesMetadata(category="LlamaIndex", output_type=OutputTypes.MULTIMODAL)
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)

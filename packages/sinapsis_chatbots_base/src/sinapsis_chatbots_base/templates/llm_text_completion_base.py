@@ -9,8 +9,10 @@ from typing import Any, Literal
 from sinapsis_core.data_containers.data_packet import DataContainer, TextPacket
 from sinapsis_core.template_base import Template
 from sinapsis_core.template_base.base_models import (
+    OutputTypes,
     TemplateAttributes,
     TemplateAttributeType,
+    UIPropertiesMetadata,
 )
 
 from sinapsis_chatbots_base.helpers.llm_keys import LLMChatKeys
@@ -69,6 +71,7 @@ class LLMTextCompletionBase(Template):
     """
 
     AttributesBaseModel = LLMTextCompletionAttributes
+    UIProperties = UIPropertiesMetadata(category="Chatbots", output_type=OutputTypes.TEXT)
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         """

@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-chatbots-base"
-version = "0.1.3"
+version = "0.1.4"
 description = "Package with base functionality for llm text creation"
 readme = "README.md"
 requires-python = ">=3.10"

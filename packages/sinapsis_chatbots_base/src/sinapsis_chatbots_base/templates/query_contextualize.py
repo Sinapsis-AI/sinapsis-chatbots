@@ -68,9 +68,6 @@ class QueryContextualize(Template, abc.ABC):
             if context:
                 text_packet.content += f" here is the context: {context}"
 
-            if context:
-                text_packet.content += f" here is the context: {context}"
-
     @abc.abstractmethod
     def add_context_to_content(self, kwd: str, container: DataContainer) -> str:
         """

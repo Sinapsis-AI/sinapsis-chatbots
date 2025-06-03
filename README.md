@@ -10,18 +10,17 @@ sinapsis-chatbots
 <br>
 </h1>
 
-<h4 align="center">A comprehensive monorepo for building and deploying AI-driven chatbots with support for multiple LLMs</h4>
+<h4 align="center">A comprehensive monorepo for building and deploying AI-driven chatbots with support for multiple large language models</h4>
 
 <p align="center">
 <a href="#installation">🐍 Installation</a> •
 <a href="#packages">📦 Packages</a> •
-<a href="#example">📚 Usage example</a> •
 <a href="#webapps">🌐 Webapps</a>
 <a href="#documentation">📙 Documentation</a> •
 <a href="#license">🔍 License</a>
 </p>
 
-The `sinapsis-chatbots` module is a powerful toolkit designed to simplify the development of AI-driven chatbots and Retrieval-Augmented Generation (RAG) systems. It provides ready-to-use templates and utilities for configuring and running LLM applications, enabling developers to integrate a wide range of LLM models with ease for natural, intelligent interactions.
+The `sinapsis-chatbots` module is a powerful toolkit designed to simplify the development of AI-driven chatbots and Retrieval-Augmented Generation (RAG) systems. It provides ready-to-use templates and utilities for configuring and running large language model (LLM) applications, enabling developers to integrate a wide range of LLM models with ease for natural, intelligent interactions.
 
 
 > [!IMPORTANT]
@@ -29,12 +28,12 @@ The `sinapsis-chatbots` module is a powerful toolkit designed to simplify the de
 
 To use them, install the dependency (if you have not installed sinapsis-llama-cpp[all])
 ```bash
-  uv pip install sinapsis-llama-cpp[llama-four] --extra-index-url https://pypi.sinapsis.tech
+uv pip install sinapsis-llama-cpp[llama-four] --extra-index-url https://pypi.sinapsis.tech
 ```
 You need a HuggingFace token. See the [official instructions](https://huggingface.co/docs/hub/security-tokens)
 and set it using
 ```bash
-  export HF_TOKEN=<token-provided-by-hf>
+export HF_TOKEN=<token-provided-by-hf>
 ```
 
 and test it through the cli or the webapp by changing the AGENT_CONFIG_PATH
@@ -47,131 +46,134 @@ and test it through the cli or the webapp by changing the AGENT_CONFIG_PATH
 
 <h2 id="installation">🐍 Installation</h2>
 
-This mono repo has support for the  llama-cpp framework through:
+This mono repo includes packages for AI-driven chatbots using various LLM frameworks through:
+* <code>sinapsis-anthropic</code>
 * <code>sinapsis-chatbots-base</code>
 * <code>sinapsis-llama-cpp</code>
 * <code>sinapsis-llama-index</code>
+* <code>sinapsis-mem0</code>
 
 
-Install using your package manager of choice. We encourage the use of <code>uv</code>
+Install using your preferred package manager. We strongly recommend using <code>uv</code>. To install <code>uv</code>, refer to the [official documentation](https://docs.astral.sh/uv/getting-started/installation/#installation-methods).
 
-Example with <code>uv</code>:
+Install with <code>uv</code>:
 
 ```bash
-  uv pip install sinapsis-llama-cpp --extra-index-url https://pypi.sinapsis.tech
+uv pip install sinapsis-llama-cpp --extra-index-url https://pypi.sinapsis.tech
 ```
- or with raw <code>pip</code>:
+Or with raw <code>pip</code>:
 ```bash
-  pip install sinapsis-llama-cpp --extra-index-url https://pypi.sinapsis.tech
+pip install sinapsis-llama-cpp --extra-index-url https://pypi.sinapsis.tech
 ```
-> [!NOTE]
-> Change the name of the package accordingly
+**Replace `sinapsis-llama-cpp` with the name of the package you intend to install**.
 
 > [!IMPORTANT]
 > Templates in each package may require extra dependencies. For development, we recommend installing the package with all the optional dependencies:
 >
 
-with <code>uv</code>:
+With <code>uv</code>:
 
 ```bash
-  uv pip install sinapsis-llama-cpp[all] --extra-index-url https://pypi.sinapsis.tech
+uv pip install sinapsis-llama-cpp[all] --extra-index-url https://pypi.sinapsis.tech
 ```
- or with raw <code>pip</code>:
+Or with raw <code>pip</code>:
 ```bash
-  pip install sinapsis-llama-cpp[all] --extra-index-url https://pypi.sinapsis.tech
+pip install sinapsis-llama-cpp[all] --extra-index-url https://pypi.sinapsis.tech
 ```
-> [!NOTE]
-> Change the name of the package accordingly
+
+**Be sure to substitute `sinapsis-llama-cpp`  with the appropriate package name**.
 
 > [!TIP]
 > You can also install all the packages within this project:
 >
 ```bash
-  uv pip install sinapsis-chatbots[all] --extra-index-url https://pypi.sinapsis.tech
+uv pip install sinapsis-chatbots[all] --extra-index-url https://pypi.sinapsis.tech
 ```
+
 <h2 id="packages">📦 Packages</h2>
 
-
-- **Sinapsis Llama CPP**
-
-    Package with support for various llama-index modules for text completion. This includes
-    making calls to llms, processing and generating embeddings and Nodes, etc.
+This repository is structured into modular packages, each facilitating the integration of AI-driven chatbots with various LLM frameworks. These packages provide flexible and easy-to-use templates for building and deploying chatbot solutions. Below is an overview of the available packages:
 
 
+<details>
+<summary id="anthropic"><strong><span style="font-size: 1.4em;"> Sinapsis Anthropic </span></strong></summary>
 
-> [!TIP]
-> Use CLI command ``` sinapsis info --all-template-names``` to show a list with all the available Template names installed with Sinapsis Data Tools.
+This package offers a suite of templates and utilities for building **text-to-text** and **image-to-text** conversational chatbots using [Anthropic's Claude](https://docs.anthropic.com/en/docs/overview) models.
 
-> [!TIP]
-> Use CLI command ```sinapsis info --example-template-config TEMPLATE_NAME``` to produce an example Agent config for the Template specified in ***TEMPLATE_NAME***.
+- **AnthropicTextGeneration**: Template for text and code generation with Claude models using the Anthropic API.
 
-For example, for ***LlaMATextCompletion*** use ```sinapsis info --example-template-config LlaMATextCompletion``` to produce the following example config:
+- **AnthropicMultiModal**: Template for multimodal chat processing using Anthropic's Claude models.
 
-```yaml
-agent:
-  name: my_first_chatbot
-  description: Agent with a template to pass a text through a LLM and return a response
-templates:
-- template_name: InputTemplate
-  class_name: InputTemplate
-  attributes: {}
-- template_name: LLaMATextCompletion
-  class_name: LLaMATextCompletion
-  template_input: InputTemplate
-  attributes:
-    llm_model_name: 'bartowski/DeepSeek-R1-Distill-Qwen-7B-GGUF'
-    llm_model_file: 'DeepSeek-R1-Distill-Qwen-7B-Q5_K_S.gguf'
-    n_ctx: 9000
-    max_tokens: 10000
-    role: assistant
-    system_prompt: 'You are an AI expert'
-    chat_format: chatml
-    context_max_len: 6
-    pattern: null
-    keep_before: true
-    temperature: 0.5
-    n_threads: 4
-    n_gpu_layers: 8
-```
+For specific instructions and further details, see the [README.md](https://github.com/Sinapsis-AI/sinapsis-chatbots/blob/main/packages/sinapsis_anthropic/README.md).
 
-<h2 id="example">📚 Usage example</h2>
-The following agent passes a text message through a TextPacket and retrieves a response from a LLM
-<details id='usage'><summary><strong><span style="font-size: 1.0em;"> Config</span></strong></summary>
-
-```yaml
-agent:
-  name: chat_completion
-  description: Agent with a chatbot that makes a call to the LLM model using a context uploaded from a file
-
-templates:
-- template_name: InputTemplate
-  class_name: InputTemplate
-  attributes: { }
-
-- template_name: TextInput
-  class_name: TextInput
-  template_input: InputTemplate
-  attributes:
-    text: what is AI?
-- template_name: LLaMATextCompletion
-  class_name: LLaMATextCompletion
-  template_input: TextInput
-  attributes:
-    llm_model_name: bartowski/DeepSeek-R1-Distill-Qwen-7B-GGUF
-    llm_model_file: DeepSeek-R1-Distill-Qwen-7B-Q5_K_S.gguf
-    n_ctx: 9000
-    max_tokens: 10000
-    temperature: 0.7
-    n_threads: 8
-    n_gpu_layers: 29
-    chat_format: chatml
-    system_prompt : "You are a python and AI agents expert and you provided reasoning behind every answer you give."
-    keep_before: True
-```
 </details>
+
+<details>
+<summary id="base"><strong><span style="font-size: 1.4em;"> Sinapsis Chatbots Base </span></strong></summary>
+
+This package provides core functionality for LLM chat completion tasks.
+
+- **QueryContextualizeFromFile**: Template that adds a certain context to the query searching for keywords in the Documents added in the generic_data field of the DataContainer
+
+For specific instructions and further details, see the [README.md](https://github.com/Sinapsis-AI/sinapsis-chatbots/blob/main/packages/sinapsis_chatbots_base/README.md).
+
+</details>
+
+<details>
+<summary id="llama-cpp"><strong><span style="font-size: 1.4em;"> Sinapsis llama-cpp </span></strong></summary>
+
+This package offers a suite of templates and utilities for running LLMs using [llama-cpp](https://github.com/ggml-org/llama.cpp).
+
+- **LLama4MultiModal**: Template for multi modal chat processing using the LLama 4 model.
+
+- **LLaMATextCompletionWithContext**: Template to initialize a LLaMA-based text completion model with context added in the prompt.
+
+- **LLaMATextCompletion**: Configures and initializes a chat completion model, supporting LLaMA, Mistral, and other compatible models.
+
+- **LLama4TextToText**: Template for text-to-text chat processing using the LLama 4 model.
+
+For specific instructions and further details, see the [README.md](https://github.com/Sinapsis-AI/sinapsis-chatbots/blob/main/packages/sinapsis_llama_cpp/README.md).
+
+</details>
+
+<details>
+<summary id="llama-cpp"><strong><span style="font-size: 1.4em;"> Sinapsis llama-cpp </span></strong></summary>
+
+Package with support for various llama-index modules for text completion. This includes making calls to llms, processing and generating embeddings and Nodes, etc.
+
+- **CodeEmbeddingNodeGenerator**: Template to generate nodes for a code base.
+
+- **EmbeddingNodeGenerator**: Template for generating text embeddings using the HuggingFace model.
+
+- **LLaMAIndexInsertNodes**: Template for inserting embeddings (nodes) into a PostgreSQL vector database using
+    the LlamaIndex `PGVectorStore` to store vectorized data.
+
+- **LLaMAIndexNodeRetriever**: Template for retrieving nodes from a database using embeddings.
+
+- **LLaMAIndexRAGTextCompletion**: Template for configuring and initializing a LLaMA-based Retrieval-Augmented Generation (RAG) system.
+
+For specific instructions and further details, see the [README.md](https://github.com/Sinapsis-AI/sinapsis-chatbots/blob/main/packages/sinapsis_llama_index/README.md).
+
+</details>
+
+<details>
+<summary id="mem0"><strong><span style="font-size: 1.4em;"> Sinapsis Mem0 </span></strong></summary>
+
+This package provides persistent memory functionality for Sinapsis agents using [Mem0](https://docs.mem0.ai/), supporting both **managed (Mem0 platform)** and **self-hosted** backends.
+
+- **Mem0Add**: Ingests and stores prompts, responses, and facts into memory.
+- **Mem0Get**: Retrieves individual or grouped memory records.
+- **Mem0Search**: Fetches relevant memories and injects them into the current prompt.
+- **Mem0Delete**: Removes stored memories selectively or in bulk.
+- **Mem0Reset**: Fully clears memory within a defined scope.
+
+For specific instructions and further details, see the [README.md](https://github.com/Sinapsis-AI/sinapsis-chatbots/blob/main/packages/sinapsis_mem0/README.md).
+
+</details>
+
 <h2 id="webapps">🌐 Webapps</h2>
 
-This module includes a webapp to interact with the model
+The webapps included in this project showcase the modularity of the templates, in this case for AI-driven chatbots.
 
 > [!IMPORTANT]
 > To run the app you first need to clone this repository:
@@ -185,37 +187,67 @@ cd sinapsis-chatbots
 > If you'd like to enable external app sharing in Gradio, `export GRADIO_SHARE_APP=True`
 
 > [!IMPORTANT]
-> You can change the model name and the number of gpu_layers used by the model in case you have an Out of Memory (OOM) error
+> You can change the model name and the number of gpu_layers used by the model in case you have an Out of Memory (OOM) error.
 
+> [!IMPORTANT]
+> Anthropic requires an API key to interact with the API. To get started, visit the [official website](https://console.anthropic.com/) to create an account. If you already have an account, go to the [API keys page](https://console.anthropic.com/settings/keys) to generate a token.
+
+> [!IMPORTANT]
+> Set your API key env var using <code> export ANTHROPIC_API_KEY='your-api-key'</code>
+
+> [!NOTE]
+> Agent configuration can be changed through the `AGENT_CONFIG_PATH` env var. You can check the available configurations in each package configs folder.
 
 <details>
 <summary id="uv"><strong><span style="font-size: 1.4em;">🐳 Docker</span></strong></summary>
 
-**IMPORTANT** This docker image depends on the sinapsis-nvidia:base image. Please refer to the official [sinapsis](https://github.com/Sinapsis-ai/sinapsis?tab=readme-ov-file#docker) instructions to Build with Docker.
+**IMPORTANT**: This Docker image depends on the `sinapsis-nvidia:base` image. For detailed instructions, please refer to the [Sinapsis README](https://github.com/Sinapsis-ai/sinapsis?tab=readme-ov-file#docker).
 
 1. **Build the sinapsis-chatbots image**:
 ```bash
 docker compose -f docker/compose.yaml build
 ```
-2. **Start the container**
+2. **Start the app container**
+
+- For Anthropic text-to-text chatbot:
+```bash
+docker compose -f docker/compose_apps.yaml up sinapsis-claude-chatbot -d
+```
+
+- For llama-cpp text-to-text chatbot:
 ```bash
 docker compose -f docker/compose_apps.yaml up sinapsis-simple-chatbot -d
 ```
-2. Check the status:
-```bash
-docker logs -f sinapsis-simple-chatbot
-```
-**NOTE**: You can also deploy the service for the RAG chatbot using
+
+- For llama-index RAG chatbot:
 ```bash
 docker compose -f docker/compose_apps.yaml up sinapsis-rag-chatbot -d
 ```
 
-3. The logs will display the URL to access the webapp, e.g.,:
+3. **Check the logs**
+
+- For Anthropic text-to-text chatbot:
+```bash
+docker logs -f sinapsis-claude-chatbot
+```
+
+- For llama-cpp text-to-text chatbot:
+```bash
+docker logs -f sinapsis-simple-chatbot
+```
+
+- For llama-index RAG chatbot:
+```bash
+docker logs -f sinapsis-rag-chatbot
+```
+
+4. **The logs will display the URL to access the webapp, e.g.,:**:
 ```bash
 Running on local URL:  http://127.0.0.1:7860
 ```
-**NOTE**: The url may be different, check the logs
-4. To stop the app:
+**NOTE**: The url may be different, check the output of logs.
+
+5. **To stop the app**:
 ```bash
 docker compose -f docker/compose_apps.yaml down
 ```
@@ -231,21 +263,23 @@ environment:
 
 </details>
 <details>
-<summary><strong><span style="font-size: 1.25em;">💻  UV</span></strong></summary>
+<summary id="virtual-environment"><strong><span style="font-size: 1.4em;">💻 UV</span></strong></summary>
 
-1. Export the environment variable to install the python bindings for llama-cpp
+To run the webapp using the <code>uv</code> package manager, follow these steps:
 
-
+1. **Export the environment variable to install the python bindings for llama-cpp**:
 
 ```bash
 export CMAKE_ARGS="-DGGML_CUDA=on"
 export FORCE_CMAKE="1"
 ```
-2. export CUDACXX:
+
+2. **Export CUDACXX**:
 ```bash
 export CUDACXX=$(command -v nvcc)
 ```
-3. **Create the virtual environment and sync dependencies:**
+
+3. **Sync the virtual environment**:
 
 ```bash
 uv sync --frozen
@@ -257,28 +291,37 @@ uv pip install sinapsis-chatbots[all] --extra-index-url https://pypi.sinapsis.te
 ```
 
 5. **Run the webapp**:
+
+- For Anthropic text-to-text chatbot:
+```bash
+export ANTHROPIC_API_KEY=your_api_key
+uv run webapps/claude_chatbot.py
+```
+
+- For llama-cpp text-to-text chatbot:
 ```bash
 uv run webapps/llama_cpp_simple_chatbot.py
 ```
 
-**NOTE:** To use OpenAI for the simple chatbot, set your API key and specify the correct configuration file
+- For OpenAI text-to-text chatbot:
 ```bash
 export AGENT_CONFIG_PATH=webapps/configs/openai_simple_chat.yaml
 export OPENAI_API_KEY=your_api_key
+uv run webapps/llama_cpp_simple_chatbot.py
 ```
-and run step 5 again
 
-**NOTE**: You can also deploy the service for the RAG chatbot using
-
+- For llama-index RAG chatbot:
 ```bash
 uv run webapps/llama_index_rag_chatbot.py
 ```
+
 6. **The terminal will display the URL to access the webapp, e.g.**:
 
-NOTE: The url can be different, check the output of the terminal
+
 ```bash
 Running on local URL:  http://127.0.0.1:7860
 ```
+**NOTE**: The URL may vary; check the terminal output for the correct address.
 
 </details>
 

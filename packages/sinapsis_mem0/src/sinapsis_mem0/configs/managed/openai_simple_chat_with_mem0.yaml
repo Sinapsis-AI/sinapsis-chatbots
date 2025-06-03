@@ -1,0 +1,70 @@
+agent:
+  name: chat_completion
+
+templates:
+- template_name: InputTemplate
+  class_name: InputTemplate
+  attributes: { }
+
+- template_name: LazyAudioReaderPydub
+  class_name: LazyAudioReaderPydub
+  template_input: InputTemplate
+  attributes:
+    audio_file_path : none
+    source : gradio
+    from_bytes : False
+
+- template_name : SpeechToTextTransformers
+  class_name: 'SpeechToTextTransformers'
+  template_input: LazyAudioReaderPydub
+  attributes:
+      model_path: openai/whisper-small
+      device: cuda
+      pipeline_kwargs:
+        chunk_length_s: 30
+        return_timestamps : word
+        generate_kwargs:
+          return_segments : True
+
+- template_name: Mem0Search
+  class_name: Mem0Search
+  template_input: SpeechToTextTransformers
+  attributes:
+    use_managed: true
+    memory_config:
+      host: null
+      org_id: null
+      project_id: null
+    enclosure: bracket
+    search_kwargs:
+      version: v2
+      run_id: test
+      user_id: my_user
+      top_k: 3
+
+- template_name: OpenAIChatWrapper
+  class_name: OpenAIChatWrapper
+  template_input: Mem0Search
+  attributes:
+    model: gpt-4.1-mini
+    openai_init: {}
+    create:
+      temperature: 0.7
+      max_tokens: 6000
+
+- template_name: Mem0Add
+  class_name: Mem0Add
+  template_input: OpenAIChatWrapper
+  attributes:
+    use_managed: true
+    memory_config:
+      host: null
+      org_id: null
+      project_id: null
+    add_kwargs:
+      user_id: my_user
+      run_id: test
+      infer: true
+      version: v2
+      output_format: v1.1
+    generic_key: Mem0Search

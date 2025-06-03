@@ -51,6 +51,7 @@ class LLMTextCompletionAttributes(TemplateAttributes):
     llm_model_name: str
     n_ctx: int = 9000
     role: Literal["system", "user", "assistant"] = "assistant"
+    generic_key: str = "SourceHistoryAggregator"
     prompt: str = ""
     system_prompt: str | Path | None = None
     chat_format: str = "chatml"
@@ -89,7 +90,7 @@ class LLMTextCompletionBase(Template):
 
     def _set_system_prompt(self):
         system_prompt = self.attributes.system_prompt
-        if ("/" in system_prompt) or ("\\" in system_prompt) or (system_prompt.endswith(".txt")):
+        if system_prompt and (("/" in system_prompt) or ("\\" in system_prompt) or (system_prompt.endswith(".txt"))):
             return Path(system_prompt).read_text()
         else:
             return system_prompt
@@ -209,7 +210,7 @@ class LLMTextCompletionBase(Template):
             tuple[str, str]: The pair of conversation_id and message
         """
         if packet:
-            conv_id = packet.id
+            conv_id = packet.source
             prompt = packet.content
         else:
             conv_id = str(uuid.uuid4())
@@ -236,22 +237,25 @@ class LLMTextCompletionBase(Template):
 
         self.logger.debug("Chatbot in progress")
         responses = []
+        full_context = []
+        contexts = self._get_generic_data(container, self.attributes.generic_key)
+        for context in contexts:
+            context_message = self.generate_dict_msg(LLMChatKeys.user_value, context)
+            full_context.append(context_message)
         for packet in container.texts:
             conv_id, prompt = self.get_conv_id_and_content(packet)
-            self._set_context(conv_id)
-
             if self.system_prompt:
                 system_prompt_msg = self.generate_dict_msg(LLMChatKeys.system_value, self.system_prompt)
-                self.append_to_context(conv_id, system_prompt_msg)
+                full_context.append(system_prompt_msg)
 
             message = self.generate_dict_msg(LLMChatKeys.user_value, prompt)
-            self.append_to_context(conv_id, message)
-            response = self.infer(list(self.context[conv_id]))
-            response_msg = self.generate_dict_msg(LLMChatKeys.assistant_value, response)
-            self.append_to_context(conv_id, response_msg)
+
+            full_context.append(message)
+            response = self.infer(full_context)
+            _ = self.generate_dict_msg(LLMChatKeys.assistant_value, response)
             self.logger.debug("End of interaction.")
 
-            responses.append(TextPacket(source=self.instance_name, content=response, id=conv_id))
+            responses.append(TextPacket(source=conv_id, content=response, id=conv_id))
 
         container.texts.extend(responses)
         return container

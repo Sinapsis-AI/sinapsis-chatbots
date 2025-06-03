@@ -9,6 +9,20 @@ services:
       - "../webapps:/app/webapps/"
     command: python3 webapps/llama_cpp_simple_chatbot.py
 
+  sinapsis-claude-chatbot:
+    extends:
+      service: sinapsis-chatbots
+      file: compose.yaml
+    container_name: sinapsis-claude-chatbot
+    environment:
+      AGENT_CONFIG_PATH: /app/packages/sinapsis_anthropic/src/sinapsis_anthropic/configs/anthropic_simple_chat.yaml
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+    volumes:
+      - "../packages/sinapsis_anthropic/src/sinapsis_anthropic/configs:/app/packages/sinapsis_anthropic/src/sinapsis_anthropic/configs/"
+      - "../webapps:/app/webapps/"
+    command: python3 webapps/claude_chatbot.py
+
+
 
   sinapsis-rag-chatbot:
     extends:

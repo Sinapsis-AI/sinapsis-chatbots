@@ -1,12 +1,22 @@
 [project]
-name = "sinapsis-chatbots-base"
-version = "0.1.6"
-description = "Package with base functionality for llm text creation"
+name = "sinapsis-mem0"
+version = "0.1.0"
+description = "Package that adds a memory layer to AI agents and assistants, enabling persistent context and real-time knowledge management."
+authors = [{ name = "SinapsisAI", email = "dev@sinapsis.tech" }]
 readme = "README.md"
-requires-python = ">=3.10"
 license-files = ["LICENSE"]
+requires-python = ">=3.10"
 dependencies = [
-    "sinapsis>=0.2.0",
+    "mem0ai>=0.1.100",
+    "sinapsis>=0.2.10",
+]
+
+[project.optional-dependencies]
+graph = [
+    "mem0ai[graph]>=0.1.100",
+]
+all = [
+    "sinapsis-mem0[graph]"
 ]
 
 [dependency-groups]
@@ -14,7 +24,6 @@ dev = [
     "ruff>=0.8.3",
     "pre-commit>=4.0.1",
 ]
-
 
 [tool.ruff]
 lint.select = [
@@ -41,13 +50,6 @@ line-length = 120
 [[tool.uv.index]]
 name = 'sinapsis'
 url = "https://pypi.sinapsis.tech/"
-[project.optional-dependencies]
-
-chatbot = [
-    "sinapsis-huggingface-transformers>=0.1.0",
-]
-
-all = ["sinapsis-chatbots-base[chatbot]"]
 
 [build-system]
 requires = ["setuptools"]

@@ -1,0 +1,138 @@
+agent:
+  name: my_test_agent
+  description: Chatbot using unsloth with Mem0 memory integration
+
+templates:
+- template_name: InputTemplate
+  class_name: InputTemplate
+  attributes: { }
+
+- template_name: LazyAudioReaderPydub
+  class_name: LazyAudioReaderPydub
+  template_input: InputTemplate
+  attributes:
+    audio_file_path : none
+    source : gradio
+    from_bytes : False
+
+- template_name : SpeechToTextTransformers
+  class_name: 'SpeechToTextTransformers'
+  template_input: LazyAudioReaderPydub
+  attributes:
+      model_path: openai/whisper-small
+      device: cuda
+      pipeline_kwargs:
+        chunk_length_s: 30
+        return_timestamps : word
+        generate_kwargs:
+          return_segments : True
+
+- template_name: Mem0Search
+  class_name: Mem0Search
+  template_input: SpeechToTextTransformers
+  attributes:
+    use_managed: true
+    memory_config:
+      host: null
+      org_id: null
+      project_id: null
+    enclosure: bracket
+    search_kwargs:
+      version: v2
+      run_id: test
+      user_id: my_user
+      top_k: 3
+
+- template_name: UnslothInference
+  class_name: UnslothInference
+  template_input: Mem0Search
+  attributes:
+    model_name: artifacts/qwen-sinapsis-3B-sft-3-epochs-full
+    dtype: "bfloat16"
+    model_kwargs:
+      max_seq_length: 10000
+      load_in_4bit: false
+      device_map: "auto"
+      gpu_memory_utilization: 1
+    model_type: conversational
+    chat_template: qwen25
+    mapping:
+      role: "role"
+      content: "content"
+      user: "user"
+      assistant: "assistant"
+    map_eos_token: true
+    system_prompt: >
+      """
+        You are the Sinapsis Assistant an AI assistant designed to help users build
+        configure and troubleshoot workflows within the Sinapsis framework Your goal
+        is to streamline AI development process using the tools and capabilities that
+        Sinapsis offers.
+
+        Requirements:
+          - Use the provided user top memories to answer the query.
+          - When prompted to produce a list of certain information, limit the response to the top 5 most relevant elements.
+          - Context Handling: Each user query is accompanied by context from the codebase. If the context is not directly relevant,
+            disregard it and respond directly to the user. Do not modify any provided code snippets. Return them as they are, preserving
+            method and class names, docstrings, attributes, etc.
+          - For conceptual question about sinapsis and its main components (agent, template, data container, packets) you can use the following
+            context to produce the response:
+              Sinapsis
+              Build and manage AI workflows through modular and scalable Agents based on composite and reusable Templates
+              Welcome to Sinapsis The all in one AI native platform that unifies the most powerful and innovative AI tools
+              from computer vision and NLP to GenAI speech processing time series analysis and beyond Whether you are building
+              experimenting or deploying Sinapsis empowers you to create seamless end to end workflows unlocking new
+              possibilities and accelerating AI driven innovation like never before Join us in shaping the future of AI
+              Core components Agent Its the core component of Sinapsis The Agent orchestrates Template executions by constructing and
+              managing a processing workflow defined by Agent and Template schemas Agents can operate in the following execution modes
+              Single Perform a single execution of the templates enlisted in the agent definition A single DataContainer is returned
+              Generator In this mode the Agent operates continuously until all the templates enlisted in the agent definition finish their
+              individual execution For example the Agent runs until all the files contained in a specified directory have been successfully
+              processed Once the Agent finishes its execution the resulting DataContainer objects are returned
+              Loop forever The Agent operates in a continuous loop until explicitly stopped by an external signal This mode is designated
+              for realtime data ingestion from sources like surveillance cameras or similar live data streams While the Agent itself does
+              not return any data the processed DataContainer contents can be stored or visualized based on user specifications
+              Another important features of Sinapsis agents are the following Supports topological sorting to dictate execution order
+              Ensure the Agent and Template definitions are valid by employing Pydantic schemas Allows to update template attributes and reset
+              template instances during runtime If required employs lazy initialization to optimize resource usage Includes logger for tracking
+              and debugging purposes Agent and Template performance can be monitored through profiler Supports multiprocessing flows
+              Templates offer a structured reusable framework for building Agent executable components Each template is a selfcontained
+              component designed to perform a specific task and uphold the singleresponsibility principle This ensures clear separation
+              of concerns promoting reusability and simplifying maintenance In summary a template can encapsulate a single function
+              a series of related operations or even orchestrate the execution of other templates providing a flexible and powerful building
+              block for developing Agentbased solutions The following points highlight the key characteristics of templates
+              Extensive parameterization via Template attributes Single input and output design Independent standalone functionality
+              Ability to be dynamically created from existing Python modules methods or classes The DataContainer is a data structure used to
+              standardize the transportation of data in Sinapsis allowing uniform data handling in all Agents and Templates To maintain a
+              consistent structure a DataContainer is designed to carry Packet data types offering robust and predictable management of the data
+              content Additionally the DataContainer offers storage support for generic data structures not covered by native Packet data types
+              in the form of Python dictionaries However generic data types should be rarely used
+              A Packet is the base data class for the different data types that can be transported in a DataContainer It encapsulates the
+              content and metadata information of individual data objects being processed by Templates Sinapsis provides native support for
+              the following Packet types ImagePacket Packet used to store image data It supports the storage of image annotations data such as
+              bounding boxes key points or segmentation masks Similarly color space can also be registered Videos can be stored as frames each of
+              them in an ImagePacket AudioPacket Packet used to store audio data It includes storage of audio duration and sample rate information
+              TextPacket Packet used to store text data like number of tokens and language TimeSeriesPacket Packet to store time series data such
+              as time series predictions and future and past covariates BinaryPacket Packet to store binary data.
+      """
+    generate_kwargs:
+      max_new_tokens: 2000
+      do_sample: false
+    streaming: true
+
+- template_name: Mem0Add
+  class_name: Mem0Add
+  template_input: UnslothInference
+  attributes:
+    use_managed: true
+    memory_config:
+      host: null
+      org_id: null
+      project_id: null
+    add_kwargs:
+      user_id: my_user
+      run_id: test
+      infer: true
+      version: v2
+      output_format: v1.1
+    generic_key: Mem0Search

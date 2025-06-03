@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-llama-index"
-version = "0.1.4"
+version = "0.1.5"
 description = "Add your description here"
 readme = "README.md"
 license-files = ["LICENSE"]

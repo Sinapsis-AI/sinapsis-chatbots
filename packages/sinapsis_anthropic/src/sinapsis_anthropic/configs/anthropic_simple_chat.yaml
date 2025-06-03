@@ -1,0 +1,36 @@
+agent:
+  name: my_claude_agent
+  description: Agent with support for text-to-text conversational chatbot using Anthropic's Claude models
+templates:
+- template_name: InputTemplate
+  class_name: InputTemplate
+  attributes: { }
+- template_name: LazyAudioReaderPydub
+  class_name: LazyAudioReaderPydub
+  template_input: InputTemplate
+  attributes:
+    audio_file_path : none
+    source : gradio
+    from_bytes : False
+- template_name : SpeechToTextTransformers-1
+  class_name: 'SpeechToTextTransformers'
+  template_input: LazyAudioReaderPydub
+  attributes:
+    model_path: "openai/whisper-small"
+    seed: 1000
+    device: "cpu"
+    pipeline_kwargs:
+      chunk_length_s: 30
+    inference_kwargs:
+      return_timestamps: word
+      generate_kwargs:
+        return_segments: True
+- template_name: AnthropicTextGeneration
+  class_name: AnthropicTextGeneration
+  template_input: SpeechToTextTransformers-1
+  attributes:
+    llm_model_name: claude-3-7-sonnet-latest
+    max_tokens: 4000
+    temperature: 1
+    web_search: True
+    extended_thinking: False

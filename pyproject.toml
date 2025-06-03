@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-chatbots"
-version = "0.3.5"
+version = "0.4.0"
 description = "Mono repo with packages for text completion tasks"
 authors = [
     {name = "SinapsisAI", email = "dev@sinapsis.tech"},
@@ -29,6 +29,8 @@ all = [
     "sinapsis-llama-cpp[all]",
     "sinapsis-chatbots-base[all]",
     "sinapsis-llama-index[all]",
+    "sinapsis-anthropic[all]",
+    "sinapsis-mem0[all]",
 ]
 
 [tool.uv.workspace]
@@ -46,6 +48,8 @@ url = "https://pypi.sinapsis.tech/"
 sinapsis-chatbots-base = { workspace = true }
 sinapsis-llama-cpp = { workspace = true }
 sinapsis-llama-index = { workspace = true }
+sinapsis-anthropic = { workspace = true }
+sinapsis-mem0 = { workspace = true }
 
 [tool.ruff]
 lint.select = [

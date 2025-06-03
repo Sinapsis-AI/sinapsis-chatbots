@@ -1,0 +1,22 @@
+agent:
+  name: my_test_agent
+  description: Get memories from local db
+
+templates:
+- template_name: InputTemplate
+  class_name: InputTemplate
+  attributes: {}
+
+- template_name: Mem0Get
+  class_name: Mem0Get
+  template_input: InputTemplate
+  attributes:
+    use_managed: true
+    memory_config:
+      host: null
+      org_id: null
+      project_id: null
+    get_all: true
+    get_kwargs:
+      user_id: my_user
+      run_id: test

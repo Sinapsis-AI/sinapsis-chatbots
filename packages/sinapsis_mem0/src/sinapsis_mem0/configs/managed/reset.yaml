@@ -1,0 +1,17 @@
+agent:
+  name: my_test_agent
+
+templates:
+- template_name: InputTemplate
+  class_name: InputTemplate
+  attributes: {}
+
+- template_name: Mem0Reset
+  class_name: Mem0Reset
+  template_input: InputTemplate
+  attributes:
+    use_managed: true
+    memory_config:
+      host: null
+      org_id: null
+      project_id: null

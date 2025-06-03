@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+import os.path
 from typing import Literal
 
-from huggingface_hub import hf_hub_download
+from huggingface_hub import errors, hf_hub_download
 from llama_cpp import Llama
 from llama_index.llms.llama_cpp import LlamaCPP
 
@@ -30,9 +31,13 @@ def init_llama_model(attributes: dict, model_type: Literal["Llama", "LlamaCPP"] 
         Llama | LlamaCPP: The initialized model (either `Llama` or `LlamaCPP`).
     """
     model_class = Llama if model_type == LLaMAModelKeys.model_type else LlamaCPP
-    model_path = hf_hub_download(
-        attributes[LLaMAModelKeys.llm_model_name], filename=attributes[LLaMAModelKeys.llm_model_file]
-    )
+    try:
+        model_path = hf_hub_download(
+            attributes[LLaMAModelKeys.llm_model_name], filename=attributes[LLaMAModelKeys.llm_model_file]
+        )
+    except errors.HFValidationError:
+        model_path = os.path.join(attributes[LLaMAModelKeys.llm_model_name], attributes[LLaMAModelKeys.llm_model_file])
+
     model_args = {
         LLaMAModelKeys.model_path: model_path,
         LLaMAModelKeys.temperature: attributes[LLaMAModelKeys.temperature],

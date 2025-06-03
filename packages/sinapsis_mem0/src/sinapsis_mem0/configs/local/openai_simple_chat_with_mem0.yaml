@@ -1,0 +1,102 @@
+agent:
+  name: chat_completion
+
+templates:
+- template_name: InputTemplate
+  class_name: InputTemplate
+  attributes: { }
+
+- template_name: LazyAudioReaderPydub
+  class_name: LazyAudioReaderPydub
+  template_input: InputTemplate
+  attributes:
+    audio_file_path : none
+    source : gradio
+    from_bytes : False
+
+- template_name : SpeechToTextTransformers
+  class_name: 'SpeechToTextTransformers'
+  template_input: LazyAudioReaderPydub
+  attributes:
+      model_path: openai/whisper-small
+      device: cuda
+      pipeline_kwargs:
+        chunk_length_s: 30
+        return_timestamps : word
+        generate_kwargs:
+          return_segments : True
+
+- template_name: Mem0Search
+  class_name: Mem0Search
+  template_input: SpeechToTextTransformers
+  attributes:
+    use_managed: false
+    memory_config:
+      vector_store:
+        provider: pgvector
+        config:
+          host: localhost
+          port: 5432
+          user: postgres
+          password: mypass
+          dbname: mem0db_2
+          collection_name: mem0_memories
+          embedding_model_dims: 384
+      llm:
+        provider: openai
+        config:
+          model: gpt-4.1-mini
+          temperature: 0.7
+          max_tokens: 2000
+      embedder:
+        provider: huggingface
+        config:
+          model: Snowflake/snowflake-arctic-embed-xs
+          embedding_dims: 384
+    enclosure: bracket
+    search_kwargs:
+      user_id: my_user
+      limit: 3
+      threshold: 0.1
+
+- template_name: OpenAIChatWrapper
+  class_name: OpenAIChatWrapper
+  template_input: Mem0Search
+  attributes:
+    model: gpt-4.1-mini
+    openai_init: {}
+    create:
+      temperature: 0.7
+      max_tokens: 2000
+
+- template_name: Mem0Add
+  class_name: Mem0Add
+  template_input: OpenAIChatWrapper
+  attributes:
+    use_managed: false
+    memory_config:
+      vector_store:
+        provider: pgvector
+        config:
+          host: localhost
+          port: 5432
+          user: postgres
+          password: mypass
+          dbname: mem0db
+          collection_name: mem0_memories
+          embedding_model_dims: 384
+      llm:
+        provider: openai
+        config:
+          model: gpt-4.1-mini
+          temperature: 0.7
+          max_tokens: 2000
+      embedder:
+        provider: huggingface
+        config:
+          model: Snowflake/snowflake-arctic-embed-xs
+          embedding_dims: 384
+    add_kwargs:
+      user_id: my_user
+      infer: true
+    generic_key: Mem0Search

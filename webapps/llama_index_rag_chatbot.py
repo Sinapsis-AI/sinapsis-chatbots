@@ -9,19 +9,23 @@ from sinapsis_llama_index.helpers.llama_index_pg_retriever import delete_table
 from sinapsis_llama_index.helpers.rag_env_vars import FEED_DB_DEFAULT_PATH, FEED_DB_FROM_PDF_PATH
 
 CONFIG_FILE = (
-    AGENT_CONFIG_PATH or "packages/sinapsis_llama_index/src/sinapsis_llama_index/configs/llama_index_rag_chat.yaml"
+    AGENT_CONFIG_PATH or "packages/sinapsis_llama_index/src/sinapsis_llama_index/configs/unsloth_with_context.yaml"
 )
 
 FEED_DB_CONFIG_FROM_PDF = (
     FEED_DB_FROM_PDF_PATH or "packages/sinapsis_llama_index/src/sinapsis_llama_index/configs/feed_db_pdf.yaml"
 )
 FEED_DB_DEFAULT_CONFIG = (
-    FEED_DB_DEFAULT_PATH or "packages/sinapsis_llama_index/src/sinapsis_llama_index/configs/feed_db_git.yaml"
+    FEED_DB_DEFAULT_PATH or "packages/sinapsis_llama_index/src/sinapsis_llama_index/configs/feed_db_git_all_repos.yaml"
 )
 
 
-def clear_database():
-    """Method to clear a database using the main configuration file from the agent"""
+def clear_database() -> gr.Markdown:
+    """Clears the vector table used by the retriever, based on the main agent configuration.
+
+    Returns:
+        gr.Markdown: A markdown message indicating completion of the operation.
+    """
     with open(CONFIG_FILE, "r", encoding="utf-8") as config_file:
         config_dict: dict = yaml.safe_load(config_file)
     config_file.close()
@@ -41,23 +45,20 @@ def clear_database():
 
 
 class RAGChatbot(BaseChatbot):
-    """
-    A chatbot class that integrates Retrieval-Augmented Generation (RAG) capabilities.
+    """A chatbot class that integrates Retrieval-Augmented Generation (RAG) capabilities.
 
-    This class extends the `SimpleLLMChatbot` and includes methods for uploading documents
+    This class extends the `BaseChatbot` and includes methods for uploading documents
     to a RAG system.
     """
 
     @staticmethod
     def upload_default_vals() -> gr.Markdown:
-        """
-        Uploads default values (Wikipedia data) to the RAG system.
+        """Uploads default values (Github repos) to the RAG system.
 
         This method uses a generic agent builder to configure the RAG system with default
-        documents (Wikipedia in this case) and then passes a `DataContainer` to initialize
+        documents (Github repos content) and then passes a `DataContainer` to initialize
         the system.
         """
-
         agent = generic_agent_builder(FEED_DB_DEFAULT_CONFIG)
         agent()
         sinapsis_logger.debug("Finished uploading default documents")
@@ -66,8 +67,7 @@ class RAGChatbot(BaseChatbot):
 
     @staticmethod
     def upload_doc(file_path: str) -> gr.Markdown:
-        """
-        Uploads a PDF document to feed the RAG system.
+        """Uploads a PDF document to feed the RAG system.
 
         This method updates the template attribute with the provided PDF file and
         passes it to the RAG system through the generic agent builder.
@@ -84,22 +84,21 @@ class RAGChatbot(BaseChatbot):
 
     @staticmethod
     def make_status_visible() -> gr.Markdown:
-        "Updates status_text to indicate that the model is ready."
-        return gr.Markdown("#### Uploading documents...")
-
-    def __call__(self) -> gr.Blocks:
-        """
-        Creates the Gradio interface for the RAG chatbot.
-
-        This method sets up a Gradio interface with file upload functionality and a button
-        for uploading default documents. It also integrates the chatbot's core functionality
-        into the interface using Gradio components.
+        """Displays a temporary status message indicating document upload is in progress.
 
         Returns:
-            gr.Interface: The Gradio interface for interacting with the chatbot.
+            gr.Markdown: A status message.
         """
-        with gr.Blocks(css=css_header()) as chatbot_interface:
-            add_logo_and_title(self.app_title)
+        return gr.Markdown("#### Uploading documents...")
+
+    def app_interface(self) -> gr.Blocks:
+        """Builds the full Gradio UI layout for the chatbot RAG application.
+
+        Returns:
+            gr.Blocks: Gradio Blocks layout for the complete application.
+        """
+        with gr.Blocks(css=css_header(), title=self.config.app_title) as chatbot_interface:
+            add_logo_and_title(self.config.app_title)
             with gr.Row():
                 upload_file_to_feed_llm = gr.UploadButton(
                     label="Upload a PDF file to feed your RAG system",
@@ -116,11 +115,11 @@ class RAGChatbot(BaseChatbot):
                 self.upload_default_vals, outputs=[status_msg]
             )
             clear_db.click(clear_database, outputs=status_msg)
-            self.app_interface()
+            self.add_app_components()
 
         return chatbot_interface
 
 
 if __name__ == "__main__":
-    sinapsis_chatbot = RAGChatbot(CONFIG_FILE, app_title="Sinapsis LLaMA-Index RAG chatbot")
-    sinapsis_chatbot().launch(share=GRADIO_SHARE_APP)
+    sinapsis_chatbot = RAGChatbot(CONFIG_FILE, config={"app_title": "Sinapsis RAG chatbot"})
+    sinapsis_chatbot.launch(share=GRADIO_SHARE_APP)

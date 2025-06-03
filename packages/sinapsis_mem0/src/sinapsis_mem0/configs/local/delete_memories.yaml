@@ -1,0 +1,28 @@
+agent:
+  name: my_test_agent
+  description: Deletes all memories for user 'my_user'
+
+templates:
+- template_name: InputTemplate
+  class_name: InputTemplate
+  attributes: {}
+
+- template_name: Mem0Delete
+  class_name: Mem0Delete
+  template_input: InputTemplate
+  attributes:
+    use_managed: false
+    memory_config:
+      vector_store:
+        provider: pgvector
+        config:
+          host: localhost
+          port: 5432
+          user: postgres
+          password: mypass
+          dbname: mem0db
+          collection_name: mem0_memories
+          embedding_model_dims: 384
+    delete_all: true
+    delete_kwargs:
+      user_id: my_user

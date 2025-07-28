@@ -49,6 +49,7 @@ and test it through the cli or the webapp by changing the AGENT_CONFIG_PATH
 This mono repo includes packages for AI-driven chatbots using various LLM frameworks through:
 * <code>sinapsis-anthropic</code>
 * <code>sinapsis-chatbots-base</code>
+* <code>sinapsis-chat-history</code>
 * <code>sinapsis-llama-cpp</code>
 * <code>sinapsis-llama-index</code>
 * <code>sinapsis-mem0</code>

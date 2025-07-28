@@ -6,6 +6,8 @@ from sinapsis_core.data_containers.data_packet import DataContainer
 from sinapsis_core.template_base import Template
 from sinapsis_core.template_base.base_models import OutputTypes, TemplateAttributes, UIPropertiesMetadata
 
+from sinapsis_chatbots_base.helpers.tags import Tags
+
 
 class QueryContextualize(Template, abc.ABC):
     """A base class for contextualizing queries based on certain keywords."""
@@ -19,7 +21,11 @@ class QueryContextualize(Template, abc.ABC):
 
         keywords: list[str]
 
-    UIProperties = UIPropertiesMetadata(category="Chatbots", output_type=OutputTypes.TEXT)
+    UIProperties = UIPropertiesMetadata(
+        category="Chatbots",
+        output_type=OutputTypes.TEXT,
+        tags=[Tags.CHATBOTS, Tags.CONTEXT, Tags.QUERY, Tags.QUERY_CONTEXTUALIZATION],
+    )
 
     @abc.abstractmethod
     def retrieve_context(self, keyword: str, context_data: dict | Any) -> str:

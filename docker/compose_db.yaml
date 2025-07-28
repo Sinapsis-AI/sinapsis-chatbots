@@ -6,7 +6,7 @@ services:
      - 5432:5432
     restart: always
     environment:
-      - POSTGRES_DB=mem0db
+      - POSTGRES_DB=sinapsis_db
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
       - POSTGRES_HOST_AUTH_METHOD=trust

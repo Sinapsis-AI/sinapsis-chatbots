@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-anthropic"
-version = "0.1.0"
+version = "0.1.1"
 description = "Package with templates for AI-driven chatbots using Anthropic's Claude models"
 authors = [
     {name = "SinapsisAI", email = "dev@sinapsis.tech"},
@@ -11,6 +11,7 @@ license-files = ["LICENSE"]
 dependencies = [
     "anthropic>=0.51.0",
     "sinapsis>=0.2.10",
+    "sinapsis-chatbots-base[all]",
 ]
 
 [dependency-groups]
@@ -45,8 +46,8 @@ line-length = 120
 url = "https://pypi.sinapsis.tech/"
 
 [tool.uv.sources]
-sinapsis-chatbots-base = { workspace = true }
 sinapsis-anthropic = { workspace = true }
+sinapsis-chatbots-base = { workspace = true }
 
 [build-system]
 requires = ["setuptools"]
@@ -60,7 +61,6 @@ Repository = "https://github.com/Sinapsis-AI/sinapsis-chatbots.git"
 
 [project.optional-dependencies]
 chatbot = [
-    "sinapsis-chatbots-base",
     "sinapsis-data-readers[all]>=0.1.8",
 ]
 all = [

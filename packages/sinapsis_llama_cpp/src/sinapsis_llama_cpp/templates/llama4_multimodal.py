@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from PIL import Image
+from sinapsis_chatbots_base.helpers.tags import Tags
 from sinapsis_core.data_containers.data_packet import DataContainer
 
 from sinapsis_llama_cpp.templates.llama_4_text_to_text import LLama4TextToText, LLamaMultiModalKeys
+
+LLama4MultiModalUIProperties = LLama4TextToText.UIProperties
+LLama4MultiModalUIProperties.tags.extend([Tags.MULTIMODAL, Tags.IMAGE_TO_TEXT])
 
 
 class LLama4MultiModal(LLama4TextToText):
@@ -41,6 +45,8 @@ class LLama4MultiModal(LLama4TextToText):
             cpu: "10GiB"
 
     """
+
+    UIProperties = LLama4MultiModalUIProperties
 
     @staticmethod
     def process_packets(messages: list, container: DataContainer) -> list:

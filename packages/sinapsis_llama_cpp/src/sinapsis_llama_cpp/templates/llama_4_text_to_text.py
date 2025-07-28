@@ -5,10 +5,14 @@ import torch  # noqa: F401
 from pydantic import Field
 from sinapsis_chatbots_base.helpers.llm_keys import LLMChatKeys
 from sinapsis_chatbots_base.helpers.postprocess_text import postprocess_text
+from sinapsis_chatbots_base.helpers.tags import Tags
 from sinapsis_chatbots_base.templates.llm_text_completion_base import LLMTextCompletionAttributes, LLMTextCompletionBase
 from sinapsis_core.data_containers.data_packet import DataContainer, TextPacket
 from sinapsis_core.template_base.base_models import TemplateAttributeType
 from transformers import AutoProcessor, Llama4ForConditionalGeneration
+
+LLama4TextToTextUIProperties = LLMTextCompletionBase.UIProperties
+LLama4TextToTextUIProperties.tags.extend([Tags.CONVERSATIONAL, Tags.LLAMA, Tags.TEXT_TO_TEXT])
 
 
 class LLamaMultiModalKeys(LLMChatKeys):
@@ -60,6 +64,8 @@ class LLama4TextToText(LLMTextCompletionBase):
             cpu: "10GiB"
 
     """
+
+    UIProperties = LLama4TextToTextUIProperties
 
     class AttributesBaseModel(LLMTextCompletionAttributes):
         """Attributes for the template:

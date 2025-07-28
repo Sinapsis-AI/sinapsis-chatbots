@@ -43,3 +43,15 @@ services:
       volumes:
         - /var/lib/postgresql/data
 
+  sinapsis-chatbot-with-history:
+    extends:
+      service: sinapsis-chatbots
+      file: compose.yaml
+    container_name: sinapsis-rag-chatbot
+    command: python3 webapps/chatbot_with_history.py
+    depends_on:
+      - postgres
+    environment:
+      FEED_DB_FROM_PDF_PATH: ${FEED_DB_FROM_PDF_PATH}
+      FEED_DB_DEFAULT_PATH: ${FEED_DB_DEFAULT_PATH}
+      AGENT_CONFIG_PATH: /app/webapps/configs/llama_simple_chat_with_history.yaml

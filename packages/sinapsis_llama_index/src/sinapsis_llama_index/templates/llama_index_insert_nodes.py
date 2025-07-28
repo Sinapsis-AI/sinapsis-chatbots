@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 
+import psycopg
 from llama_index.core.schema import TextNode
 from llama_index.vector_stores.postgres import PGVectorStore
+from psycopg import errors
+from sinapsis_chatbots_base.helpers.tags import Tags
 from sinapsis_core.data_containers.data_packet import DataContainer
 from sinapsis_core.template_base import Template
 from sinapsis_core.template_base.base_models import (
@@ -43,7 +46,19 @@ class LLaMAIndexInsertNodes(Template):
         embedding_dimension: int = 384
         generic_key: str
 
-    UIProperties = UIPropertiesMetadata(category="LlamaIndex", output_type=OutputTypes.MULTIMODAL)
+    UIProperties = UIPropertiesMetadata(
+        category="LlamaIndex",
+        output_type=OutputTypes.MULTIMODAL,
+        tags=[
+            Tags.DATABASE,
+            Tags.EMBEDDINGS,
+            Tags.LLAMAINDEX,
+            Tags.LLM,
+            Tags.MULTIMODAL,
+            Tags.POSTGRESQL,
+            Tags.VECTORS,
+        ],
+    )
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         """
@@ -59,6 +74,17 @@ class LLaMAIndexInsertNodes(Template):
         self.table = self._connect_to_table()
         self.logger.debug(f"Connected to table '{self.attributes.table_name}'")
 
+    def ensure_postgres_db_exists(self, host: str, port: str, user: str, password: str, db_name: str) -> None:
+        default_conn_str = f"host={host} port={port} user={user} password={password}"
+        try:
+            with psycopg.connect(default_conn_str, autocommit=True) as conn, conn.cursor() as cur:
+                cur.execute("SELECT 1 FROM pg_database WHERE datname = %s", (db_name,))
+                if not cur.fetchone():
+                    self.logger.debug(f"Database '{db_name}' does not exist. Creating it...")
+                    cur.execute(f'CREATE DATABASE "{db_name}"')
+        except errors.OperationalError as e:
+            raise RuntimeError(f"Failed to connect to default database to check/create '{db_name}': {e}")
+
     def _connect_to_table(self) -> PGVectorStore:
         """
         Creates and connects to a PostgreSQL vector table using LlamaIndex's `PGVectorStore`.
@@ -70,6 +96,14 @@ class LLaMAIndexInsertNodes(Template):
             PGVectorStore: An instance of the `PGVectorStore` that allows interacting with the
                 PostgreSQL vector table.
         """
+
+        self.ensure_postgres_db_exists(
+            self.attributes.host,
+            self.attributes.port,
+            self.attributes.user,
+            self.attributes.password,
+            self.attributes.db_name,
+        )
         vector_store = connect_to_table(
             db_name=self.attributes.db_name,
             host=self.attributes.host,

@@ -2,12 +2,13 @@
 import importlib
 from typing import Callable
 
-_root_lib_path = "sinapsis_llama_cpp.templates"
+_root_lib_path = "sinapsis_chat_history.templates"
 
 _template_lookup = {
-    "LLama4MultiModal": f"{_root_lib_path}.llama4_multimodal",
-    "LLaMATextCompletion": f"{_root_lib_path}.llama_text_completion",
-    "LLama4TextToText": f"{_root_lib_path}.llama_4_text_to_text",
+    "ChatHistoryFetcher": f"{_root_lib_path}.chat_history_fetcher",
+    "ChatHistoryRemover": f"{_root_lib_path}.chat_history_remover",
+    "ChatHistoryReset": f"{_root_lib_path}.chat_history_reset",
+    "ChatHistorySaver": f"{_root_lib_path}.chat_history_saver",
 }
 
 

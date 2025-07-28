@@ -46,12 +46,8 @@ templates:
     chat_format: chatml
     system_prompt : 'You are a helpful assistant'
     keep_before: True
-- template_name: VideoWriter
-  class_name: VideoWriterCV2
+- template_name: ElevenLabsVoiceGeneration
+  class_name: ElevenLabsVoiceGeneration
   template_input: LLaMATextCompletion
   attributes:
-    destination_path: "result.mp4"
-    height: 91
-    width: 1238
-    save_image_batch: True
-    fps: 30
+    voice_description: A warm and engaging Mexican Spanish female voice, perfect for storytelling, audiobooks, and podcasts. Clear and expressive, with a natural, captivating tone, ideal for social media, YouTube, TikTok, and more.

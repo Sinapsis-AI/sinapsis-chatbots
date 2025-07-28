@@ -15,7 +15,7 @@ templates:
   class_name: EmbeddingNodeGenerator
   template_input: LangchainPDFReader
   attributes:
-    generic_key: [LangchainPDFReader]
+    generic_keys: [LangchainPDFReader]
     chunk_size: 256
     separator: ' '
     model_name: intfloat/multilingual-e5-small

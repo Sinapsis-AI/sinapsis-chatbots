@@ -35,7 +35,7 @@ templates:
     database_dimension: 768
     top_k:  4
 - template_name: LLaMARAGTextCompletion
-  class_name: LLaMATextCompletionWithContext
+  class_name: LLaMATextCompletion
   template_input: LLaMAIndexNodeRetriever
   attributes:
     llm_model_name: bartowski/DeepSeek-R1-Distill-Qwen-7B-GGUF
@@ -49,7 +49,12 @@ templates:
     top_k: 4
     keep_before: false
     system_prompt : ./prompts/prompt5.txt
-    generic_key:  LLaMAIndexNodeRetriever
+    rag_context_key:  LLaMAIndexNodeRetriever
+- template_name: TextContentFilter
+  class_name: TextContentFilter
+  template_input: LLaMARAGTextCompletion
+  attributes:
+    repeated_word_threshold: 5
 - template_name: EmbeddingNodeGenerator-1
   class_name: CodeEmbeddingNodeGenerator
   template_input: LLaMARAGTextCompletion

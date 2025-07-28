@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-chatbots"
-version = "0.4.0"
+version = "0.5.0"
 description = "Mono repo with packages for text completion tasks"
 authors = [
     {name = "SinapsisAI", email = "dev@sinapsis.tech"},
@@ -26,11 +26,18 @@ gradio-app = [
 
 all = [
     "sinapsis-chatbots[gradio-app]",
+    "sinapsis-chat-history[all]",
     "sinapsis-llama-cpp[all]",
     "sinapsis-chatbots-base[all]",
     "sinapsis-llama-index[all]",
     "sinapsis-anthropic[all]",
     "sinapsis-mem0[all]",
+]
+chatbot-app = [
+    "sinapsis[webapp]>=0.2.15",
+]
+chatbot = [
+    "sinapsis-langchain-readers[langchain-pdfs-readers,langchain-wikipedia-readers]>=0.1.5",
 ]
 
 [tool.uv.workspace]
@@ -46,6 +53,7 @@ url = "https://pypi.sinapsis.tech/"
 
 [tool.uv.sources]
 sinapsis-chatbots-base = { workspace = true }
+sinapsis-chat-history = {workspace = true}
 sinapsis-llama-cpp = { workspace = true }
 sinapsis-llama-index = { workspace = true }
 sinapsis-anthropic = { workspace = true }

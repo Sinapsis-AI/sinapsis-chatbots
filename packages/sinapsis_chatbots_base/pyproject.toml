@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-chatbots-base"
-version = "0.1.6"
+version = "0.1.7"
 description = "Package with base functionality for llm text creation"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -44,7 +44,11 @@ url = "https://pypi.sinapsis.tech/"
 [project.optional-dependencies]
 
 chatbot = [
+    "sinapsis-data-readers[ffmpeg,opencv,pydub,soundfile]>=0.1.13",
+    "sinapsis-generic-data-tools>=0.1.9",
     "sinapsis-huggingface-transformers>=0.1.0",
+    "sinapsis-langchain-readers[langchain-pdfs-readers,langchain-wikipedia-readers]>=0.1.4",
+    "sinapsis[webapp]>=0.2.19",
 ]
 
 all = ["sinapsis-chatbots-base[chatbot]"]

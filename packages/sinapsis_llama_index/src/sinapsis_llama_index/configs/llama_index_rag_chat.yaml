@@ -37,7 +37,7 @@ templates:
     user: postgres
     password: password
 - template_name: LLaMARAGTextCompletion
-  class_name: LLaMATextCompletionWithContext
+  class_name: LLaMATextCompletion
   template_input: LLaMAIndexNodeRetriever
   attributes:
     llm_model_name: bartowski/DeepSeek-R1-Distill-Qwen-7B-GGUF
@@ -50,8 +50,8 @@ templates:
     query_mode: default
     top_k: 4
     keep_before: false
-    system_prompt : ./prompts/prompt_code_en.txt
-    generic_key:  LLaMAIndexNodeRetriever
+    # system_prompt : ./prompts/prompt_code_en.txt
+    rag_context_key:  LLaMAIndexNodeRetriever
 - template_name: EmbeddingNodeGenerator-1
   class_name: CodeEmbeddingNodeGenerator
   template_input: LLaMARAGTextCompletion

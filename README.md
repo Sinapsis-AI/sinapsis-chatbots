@@ -126,8 +126,6 @@ This package offers a suite of templates and utilities for running LLMs using [l
 
 - **LLama4MultiModal**: Template for multi modal chat processing using the LLama 4 model.
 
-- **LLaMATextCompletionWithContext**: Template to initialize a LLaMA-based text completion model with context added in the prompt.
-
 - **LLaMATextCompletion**: Configures and initializes a chat completion model, supporting LLaMA, Mistral, and other compatible models.
 
 - **LLama4TextToText**: Template for text-to-text chat processing using the LLama 4 model.

@@ -2,6 +2,7 @@
 from llama_index.core.schema import QueryBundle
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.vector_stores.postgres import PGVectorStore
+from sinapsis_chatbots_base.helpers.tags import Tags
 from sinapsis_core.data_containers.data_packet import DataContainer
 from sinapsis_core.template_base import Template
 from sinapsis_core.template_base.base_models import (
@@ -15,6 +16,7 @@ from sinapsis_llama_index.helpers.llama_index_pg_retriever import LLaMAIndexPGRe
 
 class LLaMAIndexNodeRetriever(Template):
     """A Template for retrieving nodes from a database using embeddings.
+
     It initializes the vector store and sets up the retrieval system.
 
     This class is designed to work with a database schema and embedding
@@ -23,7 +25,7 @@ class LLaMAIndexNodeRetriever(Template):
     """
 
     class AttributesBaseModel(TemplateAttributes):
-        """Attributes of the template
+        """Attributes of the template.
 
         embedding_model_name (str): name of the embedding model
         query_mode (str): Method to search the embeddings. Options include default, sparse,
@@ -48,7 +50,21 @@ class LLaMAIndexNodeRetriever(Template):
         user: str
         password: str
 
-    UIProperties = UIPropertiesMetadata(category="LlamaIndex", output_type=OutputTypes.MULTIMODAL)
+    UIProperties = UIPropertiesMetadata(
+        category="LlamaIndex",
+        output_type=OutputTypes.MULTIMODAL,
+        tags=[
+            Tags.DATABASE,
+            Tags.EMBEDDINGS,
+            Tags.HUGGINGFACE,
+            Tags.LLAMAINDEX,
+            Tags.LLM,
+            Tags.MULTIMODAL,
+            Tags.POSTGRESQL,
+            Tags.RETRIEVAL,
+            Tags.VECTORS,
+        ],
+    )
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
@@ -59,8 +75,7 @@ class LLaMAIndexNodeRetriever(Template):
         self.retriever = self.init_retriever()
 
     def init_vector_store(self) -> PGVectorStore:
-        """
-        Initialize the vector store for storing and retrieving embeddings.
+        """Initialize the vector store for storing and retrieving embeddings.
 
         This method connects to the database and initializes the vector store. It can be overridden by subclasses
         to provide custom vector store initialization logic.
@@ -78,8 +93,7 @@ class LLaMAIndexNodeRetriever(Template):
         return vector_store
 
     def init_retriever(self) -> LLaMAIndexPGRetriever:
-        """
-        Initialize the vector retrieval system.
+        """Initialize the vector retrieval system.
 
         This method initializes the vector retrieval system, which uses the vector store and the embedding model.
         It can be overridden by subclasses to provide custom synthesizer initialization logic.
@@ -96,12 +110,16 @@ class LLaMAIndexNodeRetriever(Template):
         return retriever
 
     def execute(self, container: DataContainer) -> DataContainer:
-        context_nodes = []
+        """Retrieves relevant text nodes for each input using vector search.
+
+        Args:
+            container (DataContainer): Contains text packets to process
+
+        Returns:
+            DataContainer: Container with retrieved nodes stored under instance_name in each packet's generic_data
+        """
         for text in container.texts:
             retrieved_nodes = self.retriever._retrieve(QueryBundle(query_str=text.content))
-
-            for node in retrieved_nodes:
-                context_nodes.append(node.text)
-
-                self._set_generic_data(container, context_nodes)
+            context_nodes = [node.text for node in retrieved_nodes]
+            text.generic_data[self.instance_name] = context_nodes
         return container

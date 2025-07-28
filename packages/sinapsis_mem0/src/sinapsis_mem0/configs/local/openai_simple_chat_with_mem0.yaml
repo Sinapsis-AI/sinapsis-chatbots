@@ -39,7 +39,7 @@ templates:
           port: 5432
           user: postgres
           password: mypass
-          dbname: mem0db_2
+          dbname: mem0db
           collection_name: mem0_memories
           embedding_model_dims: 384
       llm:

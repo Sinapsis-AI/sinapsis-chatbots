@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-mem0"
-version = "0.1.0"
+version = "0.1.1"
 description = "Package that adds a memory layer to AI agents and assistants, enabling persistent context and real-time knowledge management."
 authors = [{ name = "SinapsisAI", email = "dev@sinapsis.tech" }]
 readme = "README.md"

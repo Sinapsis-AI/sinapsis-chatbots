@@ -1,14 +1,18 @@
 # -*- coding: utf-8 -*-
 from sinapsis_chatbots_base.helpers.llm_keys import LLMChatKeys
+from sinapsis_chatbots_base.helpers.tags import Tags
 from sinapsis_core.data_containers.data_packet import DataContainer, TextPacket
 from sinapsis_generic_data_tools.helpers.encode_img_base64 import convert_image_ndarray_to_base64
 
 from sinapsis_anthropic.helpers.anthropic_keys import AnthropicKeys
 from sinapsis_anthropic.templates.anthropic_text_generation import AnthropicTextGeneration
 
+AnthropicMultiModalUIProperties = AnthropicTextGeneration.UIProperties
+AnthropicMultiModalUIProperties.tags.extend([Tags.MULTIMODAL])
+
 
 class AnthropicMultiModal(AnthropicTextGeneration):
-    """Template for multi-modal chat processing using Anthropic's Claude models.
+    """Template for multi-modal chat processing using Ant   hropic's Claude models.
 
     This template provides support for text-to-text and image-to-text conversational
     chatbots using Anthropic's Claude models that support multi-modal inputs. It enables
@@ -35,6 +39,8 @@ class AnthropicMultiModal(AnthropicTextGeneration):
     This template extends AnthropicTextGeneration with additional capabilities for handling
     image inputs alongside text.
     """
+
+    UIProperties = AnthropicMultiModalUIProperties
 
     @staticmethod
     def process_content(container: DataContainer) -> list:

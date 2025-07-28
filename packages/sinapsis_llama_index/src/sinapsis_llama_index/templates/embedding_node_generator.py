@@ -5,6 +5,7 @@ from typing import Any
 from llama_index.core.node_parser import SentenceSplitter
 from llama_index.core.schema import Document, TextNode
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+from sinapsis_chatbots_base.helpers.tags import Tags
 from sinapsis_core.data_containers.data_packet import DataContainer
 from sinapsis_core.template_base import Template
 from sinapsis_core.template_base.base_models import (
@@ -48,7 +49,11 @@ class EmbeddingNodeGenerator(Template):
         trust_remote_code: bool = False
         device: str = "cpu"
 
-    UIProperties = UIPropertiesMetadata(category="Embeddings", output_type=OutputTypes.MULTIMODAL)
+    UIProperties = UIPropertiesMetadata(
+        category="Embeddings",
+        output_type=OutputTypes.MULTIMODAL,
+        tags=[Tags.EMBEDDINGS, Tags.HUGGINGFACE, Tags.TEXT, Tags.DOCUMENTS, Tags.QUERY_CONTEXTUALIZATION, Tags.QUERY],
+    )
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         """

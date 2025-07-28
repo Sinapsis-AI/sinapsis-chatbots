@@ -38,8 +38,6 @@ templates:
     enclosure: bracket
     search_kwargs:
       version: v2
-      run_id: test
-      user_id: my_user
       top_k: 3
 
 - template_name: OpenAIChatWrapper

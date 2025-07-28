@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
+from typing import Any
+
 import gradio as gr
 import yaml  # type:ignore[import-untyped]
-from sinapsis.webapp.agent_gradio_helper import add_logo_and_title, css_header
-from sinapsis.webapp.chatbot_base import BaseChatbot, generic_agent_builder
-from sinapsis_core.utils.env_var_keys import AGENT_CONFIG_PATH, GRADIO_SHARE_APP
+from sinapsis.webapp.chatbot_base import BaseChatbot, ChatbotConfig, generic_agent_builder
+from sinapsis_core.utils.env_var_keys import AGENT_CONFIG_PATH, GRADIO_SHARE_APP, SINAPSIS_CACHE_DIR
 from sinapsis_core.utils.logging_utils import sinapsis_logger
 from sinapsis_llama_index.helpers.llama_index_pg_retriever import delete_table
 from sinapsis_llama_index.helpers.rag_env_vars import FEED_DB_DEFAULT_PATH, FEED_DB_FROM_PDF_PATH
 
 CONFIG_FILE = (
-    AGENT_CONFIG_PATH or "packages/sinapsis_llama_index/src/sinapsis_llama_index/configs/unsloth_with_context.yaml"
+    AGENT_CONFIG_PATH or "packages/sinapsis_llama_index/src/sinapsis_llama_index/configs/llama_index_rag_chat.yaml"
 )
 
 FEED_DB_CONFIG_FROM_PDF = (
@@ -28,9 +29,8 @@ def clear_database() -> gr.Markdown:
     """
     with open(CONFIG_FILE, "r", encoding="utf-8") as config_file:
         config_dict: dict = yaml.safe_load(config_file)
-    config_file.close()
 
-    templates = config_dict.get("templates")
+    templates = config_dict.get("templates", [])
     for template in templates:
         if template.get("template_name", False) == "LLaMAIndexNodeRetriever":
             database_attrs = template.get("attributes")
@@ -50,6 +50,10 @@ class RAGChatbot(BaseChatbot):
     This class extends the `BaseChatbot` and includes methods for uploading documents
     to a RAG system.
     """
+
+    def __init__(self, config_file: str, config: ChatbotConfig | dict[str, Any] = ChatbotConfig()) -> None:
+        super().__init__(config_file, config)
+        self.chatbot_height = "60vh"
 
     @staticmethod
     def upload_default_vals() -> gr.Markdown:
@@ -91,35 +95,39 @@ class RAGChatbot(BaseChatbot):
         """
         return gr.Markdown("#### Uploading documents...")
 
-    def app_interface(self) -> gr.Blocks:
-        """Builds the full Gradio UI layout for the chatbot RAG application.
-
-        Returns:
-            gr.Blocks: Gradio Blocks layout for the complete application.
-        """
-        with gr.Blocks(css=css_header(), title=self.config.app_title) as chatbot_interface:
-            add_logo_and_title(self.config.app_title)
-            with gr.Row():
-                upload_file_to_feed_llm = gr.UploadButton(
-                    label="Upload a PDF file to feed your RAG system",
-                    scale=1,
-                    file_types=[".pdf"],
-                )
-                default_values = gr.Button(value="Upload default documents")
-                clear_db = gr.Button("Clear context")
-            status_msg = gr.Markdown(visible=True)
-            upload_file_to_feed_llm.upload(self.make_status_visible, outputs=[status_msg]).then(
-                self.upload_doc, inputs=[upload_file_to_feed_llm], outputs=[status_msg]
+    def _add_rag_components(self) -> None:
+        """Adds RAG (Retrieval-Augmented Generation) components to the interface."""
+        with gr.Row():
+            upload_file_to_feed_llm = gr.UploadButton(
+                label="Upload a PDF file to feed your RAG system",
+                scale=1,
+                file_types=[".pdf"],
             )
-            default_values.click(self.make_status_visible, outputs=[status_msg]).then(
-                self.upload_default_vals, outputs=[status_msg]
-            )
-            clear_db.click(clear_database, outputs=status_msg)
-            self.add_app_components()
+            default_values = gr.Button(value="Upload default documents")
+            clear_db = gr.Button("Clear context")
+        status_msg = gr.Markdown(visible=True)
+        upload_file_to_feed_llm.upload(self.make_status_visible, outputs=[status_msg]).then(
+            self.upload_doc, inputs=[upload_file_to_feed_llm], outputs=[status_msg]
+        )
+        default_values.click(self.make_status_visible, outputs=[status_msg]).then(
+            self.upload_default_vals, outputs=[status_msg]
+        )
+        clear_db.click(clear_database, outputs=status_msg)
 
-        return chatbot_interface
+    def _inject_header_components(self):
+        """Extends the parent's method by adding RAG-specific buttons."""
+        super()._inject_header_components()
+        self._add_rag_components()
 
 
 if __name__ == "__main__":
-    sinapsis_chatbot = RAGChatbot(CONFIG_FILE, config={"app_title": "Sinapsis RAG chatbot"})
-    sinapsis_chatbot.launch(share=GRADIO_SHARE_APP)
+    config = ChatbotConfig(
+        app_title="Sinapsis RAG chatbot",
+        examples=[
+            "What does the document say about data privacy policies?",
+            "Summarize the section related to financial projections.",
+            "What does the report say about user feedback and surveys?",
+        ],
+    )
+    sinapsis_chatbot = RAGChatbot(CONFIG_FILE, config)
+    sinapsis_chatbot.launch(share=GRADIO_SHARE_APP, allowed_paths=[SINAPSIS_CACHE_DIR])

@@ -8,10 +8,16 @@ from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.llms.llama_cpp import LlamaCPP
 from llama_index.vector_stores.postgres import PGVectorStore
 from sinapsis_chatbots_base.helpers.postprocess_text import postprocess_text
+from sinapsis_chatbots_base.helpers.tags import Tags
 from sinapsis_core.template_base.base_models import TemplateAttributes, TemplateAttributeType
 from sinapsis_llama_cpp.helpers.llama_init_model import init_llama_model
 from sinapsis_llama_cpp.templates.llama_text_completion import LLaMATextCompletion, LLaMATextCompletionAttributes
 from sinapsis_llama_index.helpers.llama_index_pg_retriever import LLaMAIndexPGRetriever, connect_to_table
+
+LLaMAIndexRAGTextCompletionUIProperties = LLaMATextCompletion.UIProperties
+LLaMAIndexRAGTextCompletionUIProperties.tags.extend(
+    [Tags.LLAMAINDEX, Tags.QUERY_CONTEXTUALIZATION, Tags.RETRIEVAL, Tags.RETRIEVAL_AG]
+)
 
 
 class LLaMARAGAttributes(LLaMATextCompletionAttributes):
@@ -47,6 +53,8 @@ class LLaMARAGAttributes(LLaMATextCompletionAttributes):
     embedding_model_name: str
     context_window: int = 7000
     db_name: str
+    user: str
+    password: str
     table_name: str
     database_dimension: int
     query_mode: str
@@ -97,6 +105,7 @@ class LLaMAIndexRAGTextCompletion(LLaMATextCompletion):
     """
 
     AttributesBaseModel: TemplateAttributes = LLaMARAGAttributes
+    UIProperties = LLaMAIndexRAGTextCompletionUIProperties
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         """
@@ -152,6 +161,8 @@ class LLaMAIndexRAGTextCompletion(LLaMATextCompletion):
             db_name=self.attributes.db_name,
             table_name=self.attributes.table_name,
             dimension=self.attributes.database_dimension,
+            user=self.attributes.user,
+            password=self.attributes.password,
         )
         return vector_store
 

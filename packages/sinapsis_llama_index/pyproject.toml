@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-llama-index"
-version = "0.1.5"
+version = "0.1.6"
 description = "Add your description here"
 readme = "README.md"
 license-files = ["LICENSE"]
@@ -15,8 +15,7 @@ dependencies = [
     "sinapsis>=0.2.0",
     "sinapsis-chatbots-base",
     "sinapsis-llama-cpp",
-    "tree-sitter==0.21.3",
-    "tree-sitter-languages>=1.10.2",
+    "tree-sitter-language-pack>=0.8.0",
 ]
 [project.optional-dependencies]
 
@@ -26,9 +25,9 @@ rag-chatbot = [
 ]
 all =["sinapsis-llama-cpp[chatbot]", "sinapsis-llama-index[rag-chatbot,xformers]"]
 xformers = [
-    "xformers>=0.0.29.post3",
     "triton",
     "setuptools>=78.1.0",
+    "xformers>=0.0.29.post1",
 ]
 
 [[tool.uv.index]]

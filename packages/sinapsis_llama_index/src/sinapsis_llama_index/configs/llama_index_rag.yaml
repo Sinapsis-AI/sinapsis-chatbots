@@ -11,7 +11,8 @@ templates:
   attributes:
     audio_file_path : none
     source : gradio
-    from_bytes : False'you are a python and AI expert'
+    from_bytes : False
+    system_prompt: 'you are a python and AI expert'
 - template_name : SpeechToTextTransformers-1
   class_name: SpeechToTextTransformers
   template_input: LazyAudioReaderPydub

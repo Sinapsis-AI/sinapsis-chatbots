@@ -9,6 +9,7 @@ from sinapsis_core.template_base import Template, TemplateAttributes, TemplateAt
 from sinapsis_core.template_base.base_models import OutputTypes, UIPropertiesMetadata
 
 from sinapsis_mem0.helpers.env_var_keys import MEM0_API_KEY
+from sinapsis_mem0.helpers.tags import Tags
 
 
 class Mem0BaseAttributes(TemplateAttributes):
@@ -34,7 +35,11 @@ class Mem0Base(Template, ABC):
     """
 
     AttributesBaseModel = Mem0BaseAttributes
-    UIProperties = UIPropertiesMetadata(category="Chatbots", output_type=OutputTypes.TEXT)
+    UIProperties = UIPropertiesMetadata(
+        category="Chatbots",
+        output_type=OutputTypes.TEXT,
+        tags=[Tags.CHATBOTS, Tags.MEM0, Tags.MEMORY, Tags.MEMORY_CLIENT],
+    )
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)

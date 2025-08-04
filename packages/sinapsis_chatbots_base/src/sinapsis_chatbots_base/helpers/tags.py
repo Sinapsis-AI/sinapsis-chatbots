@@ -26,3 +26,4 @@ class Tags(Enum):
     QUERY = "query"
     QUERY_CONTEXTUALIZATION = "query_contextualization"
     VECTORS = "vectors"
+    MCP = "mcp"

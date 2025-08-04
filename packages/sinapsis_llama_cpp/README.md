@@ -31,7 +31,7 @@ To use them, install the dependency (if you have not installed sinapsis-llama-cp
 ```
 
 You need a HuggingFace token. See the [official instructions](https://huggingface.co/docs/hub/security-tokens)
-and set it using
+and set it using 
 ```bash
   export HF_TOKEN=<token-provided-by-hf>
 ```

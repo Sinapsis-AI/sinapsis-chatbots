@@ -5,7 +5,7 @@ from sinapsis_chatbots_base.templates.llm_text_completion_base import (
     LLMTextCompletionAttributes,
     LLMTextCompletionBase,
 )
-from sinapsis_core.template_base.template import TemplateAttributeType
+from sinapsis_core.template_base.base_models import TemplateAttributeType
 
 from sinapsis_anthropic.helpers.anthropic_keys import AnthropicKeys
 from sinapsis_anthropic.helpers.env_var_keys import ANTHROPIC_API_KEY

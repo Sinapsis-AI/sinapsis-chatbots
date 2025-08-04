@@ -3,7 +3,7 @@ from abc import ABC
 from typing import Any
 
 from mem0 import Memory, MemoryClient
-from mem0.client.main import APIError
+from mem0.client.utils import APIError
 from pydantic import Field
 from sinapsis_core.template_base import Template, TemplateAttributes, TemplateAttributeType
 from sinapsis_core.template_base.base_models import OutputTypes, UIPropertiesMetadata

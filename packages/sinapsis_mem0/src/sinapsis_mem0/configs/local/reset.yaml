@@ -5,7 +5,7 @@ templates:
 - template_name: InputTemplate
   class_name: InputTemplate
   attributes: {}
-
+  
 - template_name: Mem0Reset
   class_name: Mem0Reset
   template_input: InputTemplate

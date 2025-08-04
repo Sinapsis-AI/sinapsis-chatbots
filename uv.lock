@@ -4890,7 +4890,7 @@ requires-dist = [
 
 [[package]]
 name = "sinapsis-mem0"
-version = "0.1.1"
+version = "0.1.2"
 source = { editable = "packages/sinapsis_mem0" }
 dependencies = [
     { name = "mem0ai" },

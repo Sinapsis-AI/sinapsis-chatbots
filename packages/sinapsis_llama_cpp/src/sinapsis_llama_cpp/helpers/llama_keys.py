@@ -24,3 +24,6 @@ class LLaMAModelKeys:
     model_path: Literal["model_path"] = "model_path"
     model_type: Literal["Llama"] = "Llama"
     model_kwargs: Literal["model_kwargs"] = "model_kwargs"
+    messages: Literal["messages"] = "messages"
+    chatml: Literal["chatml"] = "chatml"
+    chatml_function_calling: Literal["chatml-function-calling"] = "chatml-function-calling"

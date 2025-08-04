@@ -55,7 +55,7 @@ class PostgresStorageProvider(BaseStorageProvider):
 
         Creates the database (if needed) and sets up the message table structure.
         """
-        default_conn_str = self._get_connection_string()
+        default_conn_str = f"{self._get_connection_string()} dbname=postgres"
         with psycopg.connect(default_conn_str, autocommit=True) as conn, conn.cursor() as cur:
             cur.execute("SELECT 1 FROM pg_database WHERE datname = %s", (self.config.db_name,))
             if not cur.fetchone():

@@ -122,18 +122,22 @@ class LLaMATextCompletion(LLMTextCompletionBase):
                 is generated.
         """
         self.logger.debug(f"Query is {input_message}")
-
+        chat_completion = None
         try:
             chat_completion = self.llm.create_chat_completion(messages=input_message)
-        except IndexError:
+        except (IndexError, AttributeError):
             self.reset_llm_state()
-            chat_completion = self.llm.create_chat_completion(messages=input_message)
+            if self.llm:
+                chat_completion = self.llm.create_chat_completion(messages=input_message)
 
-        chat_completion = cast(CreateChatCompletionResponse, chat_completion)
-        llm_response_choice = chat_completion[LLMChatKeys.choices]
-        response = llm_response_choice[0][LLMChatKeys.message][LLMChatKeys.content]
-        self.logger.debug(response)
+        if chat_completion:
+            chat_completion = cast(CreateChatCompletionResponse, chat_completion)
+            self.logger.info(chat_completion)
+            llm_response_choice = chat_completion[LLMChatKeys.choices]
+            response = llm_response_choice[0][LLMChatKeys.message][LLMChatKeys.content]
+            self.logger.debug(response)
 
-        if response:
-            return postprocess_text(str(response), self.attributes.pattern, self.attributes.keep_before)
+            if response:
+                return postprocess_text(str(response), self.attributes.pattern, self.attributes.keep_before)
+            return None
         return None

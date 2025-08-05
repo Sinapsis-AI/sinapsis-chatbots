@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-anthropic"
-version = "0.1.1"
+version = "0.1.2"
 description = "Package with templates for AI-driven chatbots using Anthropic's Claude models"
 authors = [
     {name = "SinapsisAI", email = "dev@sinapsis.tech"},

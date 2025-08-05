@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-chatbots"
-version = "0.5.0"
+version = "0.5.1"
 description = "Mono repo with packages for text completion tasks"
 authors = [
     {name = "SinapsisAI", email = "dev@sinapsis.tech"},

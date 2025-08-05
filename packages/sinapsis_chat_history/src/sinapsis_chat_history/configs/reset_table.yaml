@@ -1,0 +1,18 @@
+agent:
+  name: my_test_agent
+templates:
+- template_name: InputTemplate
+  class_name: InputTemplate
+  attributes: {}
+- template_name: ChatHistoryReset
+  class_name: ChatHistoryReset
+  template_input: InputTemplate
+  attributes:
+    provider: postgres
+    db_config:
+      user: "postgres"
+      password: "mypass"
+      host: "localhost"
+      port: 5432
+      db_name: "test"
+      table: "chat_messages"

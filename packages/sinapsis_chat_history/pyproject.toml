@@ -1,0 +1,33 @@
+[project]
+name = "sinapsis-chat-history"
+version = "0.1.1"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "sinapsis>=0.2.13",
+]
+
+[project.optional-dependencies]
+psycopg = [
+    "psycopg[binary,pool]>=3.2.9",
+]
+all = [
+    "sinapsis-chat-history[psycopg]",
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[[tool.uv.index]]
+name = "sinapsis"
+url = "https://pypi.sinapsis.tech/"
+
+[tool.uv.sources]
+
+[project.urls]
+Homepage = "https://sinapsis.tech"
+Documentation = "https://docs.sinapsis.tech/docs"
+Tutorials = "https://docs.sinapsis.tech/tutorials"
+Repository = "https://github.com/Sinapsis-AI/sinapsis-chatbots.git"

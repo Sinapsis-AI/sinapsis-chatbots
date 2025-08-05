@@ -7,6 +7,7 @@ _root_lib_path = "sinapsis_anthropic.templates"
 _template_lookup = {
     "AnthropicMultiModal": f"{_root_lib_path}.anthropic_multimodal",
     "AnthropicTextGeneration": f"{_root_lib_path}.anthropic_text_generation",
+    "AnthropicWithMCP": f"{_root_lib_path}.anthropic_mcp",
 }
 
 

@@ -139,7 +139,8 @@ class LLMTextCompletionBase(Template):
         Subclasses may override this method to implement model-specific reset behaviors
         if needed.
         """
-        self.llm.reset()
+        if self.llm:
+            self.llm.reset()
 
     def infer(self, text: str | list) -> str | None:
         """Gets a response from the model, handling any errors or issues by resetting the model state if necessary.
@@ -155,7 +156,9 @@ class LLMTextCompletionBase(Template):
             return self.get_response(text)
         except ValueError:
             self.reset_llm_state()
-            return self.get_response(text)
+            if self.llm:
+                return self.get_response(text)
+            return None
 
     @staticmethod
     def generate_dict_msg(role: str, msg_content: str | list | None) -> dict:
@@ -242,8 +245,8 @@ class LLMTextCompletionBase(Template):
             full_context.append(message)
             response = self.infer(full_context)
             self.logger.debug("End of interaction.")
-
-            responses.append(TextPacket(source=session_id, content=response, id=user_id))
+            if response:
+                responses.append(TextPacket(source=session_id, content=response, id=user_id))
 
         container.texts.extend(responses)
         return container

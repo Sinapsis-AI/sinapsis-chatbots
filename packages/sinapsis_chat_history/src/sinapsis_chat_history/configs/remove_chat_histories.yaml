@@ -1,0 +1,22 @@
+agent:
+  name: my_test_agent
+templates:
+- template_name: InputTemplate
+  class_name: InputTemplate
+  attributes: {}
+- template_name: ChatHistoryRemover
+  class_name: ChatHistoryRemover
+  template_input: InputTemplate
+  attributes:
+    provider: postgres
+    db_config:
+      user: "postgres"
+      password: "password"
+      host: "localhost"
+      port: 5432
+      db_name: "test"
+      table: "chat_messages"
+    last_n: 10
+    filters:
+      user_id: Chatbot user
+      session_id: 3aa8d1a4-c8a7-4367-8b20-168351f76ab9

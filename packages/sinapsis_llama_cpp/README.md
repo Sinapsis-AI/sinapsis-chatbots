@@ -6,11 +6,11 @@
     alt="" width="300">
 </a>
 <br>
-sinapsis-llama-cpp
+Sinapsis LLaMA CPP
 <br>
 </h1>
 
-<h4 align="center">Package with support for the llama-cpp library to handle text processing </h4>
+<h4 align="center">Sinapsis Templates for LLM text completion with LLaMA-CPP</h4>
 
 <p align="center">
 <a href="#installation">🐍 Installation</a> •
@@ -25,18 +25,19 @@ The `sinapsis-llama-cpp` module provides a suite of templates to run LLMs with [
 > [!IMPORTANT]
 > We now include support for Llama4 models!
 
-To use them, install the dependency (if you have not installed sinapsis-llama-cpp[all])
+To use them, install the dependency (if you have not installed sinapsis-llama-cpp[all]):
+
 ```bash
   uv pip install sinapsis-llama-cpp[llama-four] --extra-index-url https://pypi.sinapsis.tech
 ```
 
-You need a HuggingFace token. See the [official instructions](https://huggingface.co/docs/hub/security-tokens)
-and set it using 
+You need a HuggingFace token. See the [official instructions](https://huggingface.co/docs/hub/security-tokens) and set it using:
+
 ```bash
   export HF_TOKEN=<token-provided-by-hf>
 ```
 
-and test it through the cli or the webapp by changing the AGENT_CONFIG_PATH
+And test it through the cli or the webapp by changing the AGENT_CONFIG_PATH
 
 > [!NOTE]
 > Llama 4 requires large GPUs to run the models.
@@ -73,36 +74,159 @@ with <code>uv</code>:
 
 
 <h2 id="features">🚀 Features</h2>
-* LLaMATextCompletion: Configures and initializes a chat completion model, supporting LLaMA, Mistral, and other compatible models.
-<details>
-<summary id="configuration"><strong><span style="font-size: 1.25em;">🌍 General Attributes</span></strong></summary>
 
-These attributes apply to `LLaMATextCompletion``
-:
-- `llm_model_name`(Required): Name of the LLM to use.
-- `llm_model_file`(Required): File path to the LLM.
-- `n_ctx`(Required): Maximum context size.
-- `role`: Role in the conversation (`system`, `user`, or `assistant`, default: `assistant`)
-- `system_prompt` (Optional): Defines the personality of the LLM (e.g., you are a python expert)
-- `prompt`: Custom instructions to guide the LLM response (default: empty).
-- `chat_format`: Chat message format (`llama-2`, `chatml`, etc., default: `chatml`).
-- `context_max_len`: Maximum conversation context length (default: 6).
-- `pattern`: Regex pattern to match delimiters (default: handles `<|...|>` and `</...>`).
-- `keep_before`: Determines which part of the matched text to return (default: `True`)
-- `max_tokens`: Maximum number of tokens to generate (default: 256).
-- `temperature`: Sampling temperature, controlling randomness (default: 0.5).
-- `n_threads`: Number of CPU threads to use (default: 4).
-- `n_gpu_layers`: Number of LLM layers offloaded to GPU (-1 for all layers, default: 0).
+<h3>Templates Supported</h3>
 
-</details>
-> [!IMPORTANT]
-> We now include support for Llama4 models!
+- **LLaMATextCompletion**: Template for text completion using LLaMA CPP.
 
-To use them, install the dependency (if you have not installed sinapsis-llama-cpp[all])
-```bash
-  uv pip install sinapsis-llama-cpp[llama-four] --extra-index-url https://pypi.sinapsis.tech
-```
-and test it through the cli or the webapp by changing the AGENT_CONFIG_PATH
+    <details>
+    <summary>Attributes</summary>
+
+    - `init_args`(`LLaMAInitArgs`, required): LLaMA model arguments.
+      - `llm_model_name`(`str`, required): The name or path of the LLM model to use (e.g. 'TheBloke/Llama-2-7B-GGUF').
+      - `llm_model_file`(`str`, required): The specific GGUF model file (e.g., 'llama-2-7b.Q2_K.gguf').
+      - `n_gpu_layers`(`int`, optional): Number of layers to offload to the GPU (-1 for all). Defaults to `0`.
+      - `use_mmap`(`bool`, optional): Use 'memory-mapping' to load the model. Defaults to `True`.
+      - `use_mlock`(`bool`, optional): Force the model to be kept in RAM. Defaults to `False`.
+      - `seed`(`int`, optional): RNG seed for model initialization. Defaults to `LLAMA_DEFAULT_SEED`.
+      - `n_ctx`(`int`, optional): The context window size. Defaults to `512`.
+      - `n_batch`(`int`, optional): The batch size for prompt processing. Defaults to `512`.
+      - `n_ubatch`(`int`, optional): The batch size for token generation. Defaults to `512`.
+      - `n_threads`(`int`, optional): CPU threads for generation. Defaults to `None`.
+      - `n_threads_batch`(`int`, optional): CPU threads for batch processing. Defaults to `None`.
+      - `flash_attn`(`bool`, optional): Enable Flash Attention if supported by the GPU. Defaults to `False`.
+      - `chat_format`(`str`, optional): Chat template format (e.g., 'chatml'). Defaults to `None`.
+      - `verbose`(`bool`, optional): Enable verbose logging from llama.cpp. Defaults to `True`.
+    - `completion_args`(`LLaMACompletionArgs`, required): Generation arguments to pass to the selected model.
+      - `temperature`(`float`, optional): Controls randomness. 0.0 = deterministic, >0.0 = random. Defaults to `0.2`.
+      - `top_p`(`float`, optional): Nucleus sampling. Considers tokens with cumulative probability >= top_p. Defaults to `0.95`.
+      - `top_k`(`int`, optional): Top-k sampling. Considers the top 'k' most probable tokens. Defaults to `40`.
+      - `max_tokens`(`int`, required): The maximum number of new tokens to generate.
+      - `min_p`(`float`, optional): Min-p sampling, filters tokens below this probability. Defaults to `0.05`.
+      - `stop`(`str | list[str]`, optional): Stop sequences to halt generation. Defaults to `None`.
+      - `seed`(`int`, optional): Overrides the model's seed just for this call. Defaults to `None`.
+      - `repeat_penalty`(`float`, optional): Penalty for repeating tokens (1.0 = no penalty). Defaults to `1.0`.
+      - `presence_penalty`(`float`, optional): Penalty for new tokens (0.0 = no penalty). Defaults to `0.0`.
+      - `frequency_penalty`(`float`, optional): Penalty for frequent tokens (0.0 = no penalty). Defaults to `0.0`.
+      - `logit_bias`(`dict[int, float]`, optional): Applies a bias to specific tokens. Defaults to `None`.
+    - `chat_history_key`(`str`, optional): Key in the packet's generic_data to find
+    the conversation history.
+    - `rag_context_key`(`str`, optional): Key in the packet's generic_data to find
+    RAG context to inject.
+    - `system_prompt`(`str | Path`, optional): The system prompt (or path to one)
+    to instruct the model.
+    - `pattern`(`dict`, optional): A regex pattern used to post-process the model's response.
+    - `keep_before`(`bool`, optional): If True, keeps text before the 'pattern' match; otherwise, keeps text after.
+
+    </details>
+
+- **LLaMATextCompletionWithMCP**: Template for text completion with MCP tool integration using LLaMA CPP.
+
+    <details>
+    <summary>Attributes</summary>
+
+    - `init_args`(`LLaMAInitArgs`, required): LLaMA model arguments.
+      - `llm_model_name`(`str`, required): The name or path of the LLM model to use (e.g. 'TheBloke/Llama-2-7B-GGUF').
+      - `llm_model_file`(`str`, required): The specific GGUF model file (e.g., 'llama-2-7b.Q2_K.gguf').
+      - `n_gpu_layers`(`int`, optional): Number of layers to offload to the GPU (-1 for all). Defaults to `0`.
+      - `use_mmap`(`bool`, optional): Use 'memory-mapping' to load the model. Defaults to `True`.
+      - `use_mlock`(`bool`, optional): Force the model to be kept in RAM. Defaults to `False`.
+      - `seed`(`int`, optional): RNG seed for model initialization. Defaults to `LLAMA_DEFAULT_SEED`.
+      - `n_ctx`(`int`, optional): The context window size. Defaults to `512`.
+      - `n_batch`(`int`, optional): The batch size for prompt processing. Defaults to `512`.
+      - `n_ubatch`(`int`, optional): The batch size for token generation. Defaults to `512`.
+      - `n_threads`(`int`, optional): CPU threads for generation. Defaults to `None`.
+      - `n_threads_batch`(`int`, optional): CPU threads for batch processing. Defaults to `None`.
+      - `flash_attn`(`bool`, optional): Enable Flash Attention if supported by the GPU. Defaults to `False`.
+      - `chat_format`(`str`, optional): Chat template format (e.g., 'chatml'). Defaults to `None`.
+      - `verbose`(`bool`, optional): Enable verbose logging from llama.cpp. Defaults to `True`.
+    - `completion_args`(`LLaMACompletionArgs`, required): Generation arguments to pass to the selected model.
+      - `temperature`(`float`, optional): Controls randomness. 0.0 = deterministic, >0.0 = random. Defaults to `0.2`.
+      - `top_p`(`float`, optional): Nucleus sampling. Considers tokens with cumulative probability >= top_p. Defaults to `0.95`.
+      - `top_k`(`int`, optional): Top-k sampling. Considers the top 'k' most probable tokens. Defaults to `40`.
+      - `max_tokens`(`int`, required): The maximum number of new tokens to generate.
+      - `min_p`(`float`, optional): Min-p sampling, filters tokens below this probability. Defaults to `0.05`.
+      - `stop`(`str | list[str]`, optional): Stop sequences to halt generation. Defaults to `None`.
+      - `seed`(`int`, optional): Overrides the model's seed just for this call. Defaults to `None`.
+      - `repeat_penalty`(`float`, optional): Penalty for repeating tokens (1.0 = no penalty). Defaults to `1.0`.
+      - `presence_penalty`(`float`, optional): Penalty for new tokens (0.0 = no penalty). Defaults to `0.0`.
+      - `frequency_penalty`(`float`, optional): Penalty for frequent tokens (0.0 = no penalty). Defaults to `0.0`.
+      - `logit_bias`(`dict[int, float]`, optional): Applies a bias to specific tokens. Defaults to `None`.
+    - `chat_history_key`(`str`, optional): Key in the packet's generic_data to find
+    the conversation history.
+    - `rag_context_key`(`str`, optional): Key in the packet's generic_data to find
+    RAG context to inject.
+    - `system_prompt`(`str | Path`, optional): The system prompt (or path to one)
+    to instruct the model.
+    - `pattern`(`dict`, optional): A regex pattern used to post-process the model's response.
+    - `keep_before`(`bool`, optional): If True, keeps text before the 'pattern' match; otherwise, keeps text after.
+    - `tools_key`(`str`, optional): Key used to extract the raw tools from the data container. Defaults to `""`.
+    - `max_tool_retries`(`int`, optional): Maximum consecutive tool execution failures before stopping. Defaults to `3`.
+    - `add_tool_to_prompt`(`bool`, optional): Whether to automatically append tool descriptions to the system prompt. Defaults to `True`.
+
+    </details>
+
+- **LLama4TextToText**: Template for text-to-text chat processing using the LLama 4 model.
+
+    <details>
+    <summary>Attributes</summary>
+
+    - `init_args`(`LLaMA4InitArgs`, required): LLaMA4 model arguments.
+      - `llm_model_name`(`str`, required): The name or path of the LLM model to use (e.g., 'meta-llama/Llama-4-Scout-17B-16E-Instruct').
+      - `cache_dir`(`str`, optional): Path to use for the model cache and download.
+      - `device_map`(`str`, optional): Device mapping for `from_pretrained`. Defaults to `auto`.
+      - `torch_dtype`(`str`, optional): Model tensor precision (e.g., 'auto', 'float16'). Defaults to `auto`.
+      - `max_memory`(`dict`, optional): Max memory allocation per device. Defaults to `None`.
+    - `completion_args`(`LLMCompletionArgs`, required): Generation arguments to pass to the selected model.
+      - `temperature`(`float`, optional): Controls randomness. 0.0 = deterministic, >0.0 = random. Defaults to `0.2`.
+      - `top_p`(`float`, optional): Nucleus sampling. Considers tokens with cumulative probability >= top_p. Defaults to `0.95`.
+      - `top_k`(`int`, optional): Top-k sampling. Considers the top 'k' most probable tokens. Defaults to `40`.
+      - `max_length`(`int`, optional): The maximum length of the sequence (prompt + generation). Defaults to `20`.
+      - `max_new_tokens`(`int`, optional): The maximum number of new tokens to generate. Defaults to `None`.
+      - `do_sample`(`bool`, optional): Whether to use sampling (True) or greedy decoding (False). Defaults to `True`.
+      - `min_p`(`float`, optional): Min-p sampling, filters tokens below this probability. Defaults to `None`.
+      - `repetition_penalty`(`float`, optional): Penalty applied to repeated tokens (1.0 = no penalty). Defaults to `1.0`.
+    - `chat_history_key`(`str`, optional): Key in the packet's generic_data to find
+    the conversation history.
+    - `rag_context_key`(`str`, optional): Key in the packet's generic_data to find
+    RAG context to inject.
+    - `system_prompt`(`str | Path`, optional): The system prompt (or path to one)
+    to instruct the model.
+    - `pattern`(`dict`, optional): A regex pattern used to post-process the model's response.
+    - `keep_before`(`bool`, optional): If True, keeps text before the 'pattern' match; otherwise, keeps text after.
+
+    </details>
+
+- **LLama4MultiModal**: Template for multi modal chat processing using the LLama 4 model.
+
+    <details>
+    <summary>Attributes</summary>
+
+    - `init_args`(`LLaMA4InitArgs`, required): LLaMA4 model arguments.
+      - `llm_model_name`(`str`, required): The name or path of the LLM model to use (e.g., 'meta-llama/Llama-4-Scout-17B-16E-Instruct').
+      - `cache_dir`(`str`, optional): Path to use for the model cache and download.
+      - `device_map`(`str`, optional): Device mapping for `from_pretrained`. Defaults to `auto`.
+      - `torch_dtype`(`str`, optional): Model tensor precision (e.g., 'auto', 'float16'). Defaults to `auto`.
+      - `max_memory`(`dict`, optional): Max memory allocation per device. Defaults to `None`.
+    - `completion_args`(`LLMCompletionArgs`, required): Generation arguments to pass to the selected model.
+      - `temperature`(`float`, optional): Controls randomness. 0.0 = deterministic, >0.0 = random. Defaults to `0.2`.
+      - `top_p`(`float`, optional): Nucleus sampling. Considers tokens with cumulative probability >= top_p. Defaults to `0.95`.
+      - `top_k`(`int`, optional): Top-k sampling. Considers the top 'k' most probable tokens. Defaults to `40`.
+      - `max_length`(`int`, optional): The maximum length of the sequence (prompt + generation). Defaults to `20`.
+      - `max_new_tokens`(`int`, optional): The maximum number of new tokens to generate. Defaults to `None`.
+      - `do_sample`(`bool`, optional): Whether to use sampling (True) or greedy decoding (False). Defaults to `True`.
+      - `min_p`(`float`, optional): Min-p sampling, filters tokens below this probability. Defaults to `None`.
+      - `repetition_penalty`(`float`, optional): Penalty applied to repeated tokens (1.0 = no penalty). Defaults to `1.0`.
+    - `chat_history_key`(`str`, optional): Key in the packet's generic_data to find
+    the conversation history.
+    - `rag_context_key`(`str`, optional): Key in the packet's generic_data to find
+    RAG context to inject.
+    - `system_prompt`(`str | Path`, optional): The system prompt (or path to one)
+    to instruct the model.
+    - `pattern`(`dict`, optional): A regex pattern used to post-process the model's response.
+    - `keep_before`(`bool`, optional): If True, keeps text before the 'pattern' match; otherwise, keeps text after.
+
+    </details>
 
 
 > [!TIP]
@@ -111,12 +235,11 @@ and test it through the cli or the webapp by changing the AGENT_CONFIG_PATH
 > [!TIP]
 > Use CLI command ```sinapsis info --example-template-config TEMPLATE_NAME``` to produce an example Agent config for the Template specified in ***TEMPLATE_NAME***.
 
-For example, for ***LlaMATextCompletion*** use ```sinapsis info --example-template-config LlaMATextCompletion``` to produce the following example config:
+For example, for ***LLaMATextCompletion*** use ```sinapsis info --example-template-config LLaMATextCompletion``` to produce the following example config:
 
 ```yaml
 agent:
-  name: my_first_chatbot
-  description: Agent with a template to pass a text through a LLM and return a response
+  name: my_test_agent
 templates:
 - template_name: InputTemplate
   class_name: InputTemplate
@@ -125,19 +248,38 @@ templates:
   class_name: LLaMATextCompletion
   template_input: InputTemplate
   attributes:
-    llm_model_name: 'bartowski/DeepSeek-R1-Distill-Qwen-7B-GGUF'
-    llm_model_file: 'DeepSeek-R1-Distill-Qwen-7B-Q5_K_S.gguf'
-    n_ctx: 9000
-    max_tokens: 10000
-    role: assistant
-    system_prompt: 'You are an AI expert'
-    chat_format: chatml
-    context_max_len: 6
+    init_args:
+      llm_model_name: '`replace_me:<class ''str''>`'
+      llm_model_file: '`replace_me:<class ''str''>`'
+      n_gpu_layers: 0
+      use_mmap: true
+      use_mlock: false
+      seed: 4294967295
+      n_ctx: 512
+      n_batch: 512
+      n_ubatch: 512
+      n_threads: null
+      n_threads_batch: null
+      flash_attn: false
+      chat_format: null
+      verbose: true
+    completion_args:
+      temperature: 0.2
+      top_p: 0.95
+      top_k: 40
+      max_tokens: '`replace_me:<class ''int''>`'
+      min_p: 0.05
+      stop: null
+      seed: null
+      repeat_penalty: 1.0
+      presence_penalty: 0.0
+      frequency_penalty: 0.0
+      logit_bias: null
+    chat_history_key: null
+    rag_context_key: null
+    system_prompt: null
     pattern: null
     keep_before: true
-    temperature: 0.5
-    n_threads: 4
-    n_gpu_layers: 8
 ```
 
 <h2 id="example">📚 Usage example</h2>
@@ -147,32 +289,39 @@ The following agent passes a text message through a TextPacket and retrieves a r
 ```yaml
 agent:
   name: chat_completion
-  description: Agent with a chatbot that makes a call to the LLM model using a context uploaded from a file
+  description: Chatbot agent using DeepSeek-R1
 
 templates:
 - template_name: InputTemplate
   class_name: InputTemplate
-  attributes: { }
+  attributes: {}
 
 - template_name: TextInput
   class_name: TextInput
   template_input: InputTemplate
   attributes:
     text: what is AI?
+
 - template_name: LLaMATextCompletion
   class_name: LLaMATextCompletion
   template_input: TextInput
   attributes:
-    llm_model_name: bartowski/DeepSeek-R1-Distill-Qwen-7B-GGUF
-    llm_model_file: DeepSeek-R1-Distill-Qwen-7B-Q5_K_S.gguf
-    n_ctx: 9000
-    max_tokens: 10000
-    temperature: 0.7
-    n_threads: 8
-    n_gpu_layers: 29
-    chat_format: chatml
-    system_prompt : "You are a python and AI agents expert and you provided reasoning behind every answer you give."
-    keep_before: True
+    init_args:
+      llm_model_name: bartowski/DeepSeek-R1-Distill-Qwen-7B-GGUF
+      llm_model_file: DeepSeek-R1-Distill-Qwen-7B-Q5_K_S.gguf
+      n_ctx: 8192
+      n_threads: 8
+      n_gpu_layers: -1
+      chat_format: chatml
+      flash_attn: true
+      seed: 10
+    completion_args:
+      max_tokens: 4096
+      temperature: 0.2
+      seed: 10
+    system_prompt : 'You are a helpful assistant'
+    pattern: "</think>"
+    keep_before: False
 ```
 </details>
 <h2 id="webapps">🌐 Webapps</h2>

@@ -6,7 +6,7 @@
     alt="" width="300">
 </a>
 <br>
-sinapsis-anthropic
+Sinapsis Anthropic
 <br>
 </h1>
 
@@ -21,10 +21,9 @@ sinapsis-anthropic
 <a href="#license">🔍 License</a>
 </p>
 
-The `sinapsis-anthropic` module provides a suite of templates for building **text-to-text** and **image-to-text** conversational chatbots using [Anthropic's Claude](https://docs.anthropic.com/en/docs/overview) models.
+The `sinapsis-anthropic` module provides a suite of templates for building **text-to-text**, **image-to-text** and **mcp** conversational chatbots using [Anthropic's Claude](https://docs.anthropic.com/en/docs/overview) models.
 
 <h2 id="installation">🐍 Installation</h2>
-
 
 Install using your preferred package manager. We strongly recommend using <code>uv</code>. To install <code>uv</code>, refer to the [official documentation](https://docs.astral.sh/uv/getting-started/installation/#installation-methods).
 
@@ -52,7 +51,6 @@ Or with raw <code>pip</code>:
 pip install sinapsis-anthropic[all] --extra-index-url https://pypi.sinapsis.tech
 ```
 
-
 <h2 id="features">🚀 Features</h2>
 
 <h3>Templates Supported</h3>
@@ -62,17 +60,27 @@ pip install sinapsis-anthropic[all] --extra-index-url https://pypi.sinapsis.tech
     <details>
     <summary>Attributes</summary>
 
-    - `llm_model_name`(Required): The name of the Claude model to be used. To see the list of all available Claude models visit the [official documentation](https://docs.anthropic.com/en/docs/about-claude/models/overview).
-    - `role`(Optional): The role in the conversation, such as `system`, `user`, or `assistant` (default: `assistant`).
-    - `prompt`(Optional):  A set of instructions provided to the LLM to guide how to respond. (default: empty string).
-    - `system_prompt`(Optional): The prompt that indicates the LLM how to behave (default: `None`).
-    - `context_max_len`(Optional): The maximum length for the conversation context (default: `6`).
-    - `budget_tokens`(Optional): The maximum number of tokens to allocate for intermediate
-        thinking steps when `extended_thinking` is enabled (default: `2000`).
-    - `extended_thinking`(Optional): A flag indicating whether to display "thinking" content blocks in the response (default: `False`).
-    - `max_tokens`(Optional): Maximum number of tokens to generate (default: `4000`).
-    - `temperature`(Optional): Sampling temperature for the model (default: `1.0`).
-    - `web_search`(Optional): A boolean flag indicating whether web search should be enabled (default: `False`).
+    - `init_args`(`LLMInitArgs`, required): Model arguments.
+      - `llm_model_name`(`str`, required): The name of the Claude model to be used. To see the list of all available Claude models visit the [official documentation](https://docs.anthropic.com/en/docs/about-claude/models/overview).
+    - `completion_args`(`LLMCompletionArgs`, required): Generation arguments to pass to the selected model.
+      - `temperature`(`float`, optional): Controls randomness. 0.0 = deterministic, >0.0 = random. Defaults to `0.2`.
+      - `top_p`(`float`, optional): Nucleus sampling. Considers tokens with cumulative probability >= top_p. Defaults to `0.95`.
+      - `top_k`(`int`, optional): Top-k sampling. Considers the top 'k' most probable tokens. Defaults to `40`.
+      - `max_tokens`(`int`, required): The maximum number of new tokens to generate.
+      - `service_tier`(`Literal["auto", "standard_only"]`, optional): Specifies the service tier for the request. Defaults to `'standard_only'`.
+      - `stop_sequences`(`list[str]`, optional): Custom text sequences that will cause the model to stop generating.
+    - `chat_history_key`(`str`, optional): Key in the packet's generic_data to find
+    the conversation history.
+    - `rag_context_key`(`str`, optional): Key in the packet's generic_data to find
+    RAG context to inject.
+    - `system_prompt`(`str | Path`, optional): The system prompt (or path to one)
+    to instruct the model.
+    - `pattern`(`dict`, optional): A regex pattern used to post-process the model's response.
+    - `keep_before`(`bool`, optional): If True, keeps text before the 'pattern' match; otherwise, keeps text after.
+    - `extended_thinking`(`AnthropicThinkingArgs`, optional): Configuration for enabling or disabling the extended "thinking" feature.
+      - `type`(`Literal["enabled", "disabled"]`, optional): To disable or enable extended thinking. Defaults to `'disabled'`.
+      - `budget_tokens`(`int`, optional): The max tokens to use for internal reasoning. Must be ≥1024 and less than `max_tokens`. Defaults to `2048`.
+
     </details>
 
 - **AnthropicMultiModal**: Template for multimodal chat processing using Anthropic's Claude models.
@@ -80,19 +88,57 @@ pip install sinapsis-anthropic[all] --extra-index-url https://pypi.sinapsis.tech
     <details>
     <summary>Attributes</summary>
 
-    - `llm_model_name`(Required): The name of the Claude model to be used. To see the list of all available Claude models visit the [official documentation](https://docs.anthropic.com/en/docs/about-claude/models/overview).
-    - `role`(Optional): The role in the conversation, such as `system`, `user`, or `assistant` (default: `assistant`).
-    - `prompt`(Optional):  A set of instructions provided to the LLM to guide how to respond. (default: empty string).
-    - `system_prompt`(Optional): The prompt that indicates the LLM how to behave (default: `None`).
-    - `context_max_len`(Optional): The maximum length for the conversation context (default: `6`).
-    - `budget_tokens`(Optional): The maximum number of tokens to allocate for intermediate
-        thinking steps when `extended_thinking` is enabled (default: `2000`).
-    - `extended_thinking`(Optional): A flag indicating whether to display "thinking" content blocks in the response (default: `False`).
-    - `max_tokens`(Optional): Maximum number of tokens to generate (default: `4000`).
-    - `temperature`(Optional): Sampling temperature for the model (default: `1.0`).
-    - `web_search`(Optional): A boolean flag indicating whether web search should be enabled (default: `False`).
+    - `init_args`(`LLMInitArgs`, required): Model arguments.
+      - `llm_model_name`(`str`, required): The name of the Claude model to be used. To see the list of all available Claude models visit the [official documentation](https://docs.anthropic.com/en/docs/about-claude/models/overview).
+    - `completion_args`(`LLMCompletionArgs`, required): Generation arguments to pass to the selected model.
+      - `temperature`(`float`, optional): Controls randomness. 0.0 = deterministic, >0.0 = random. Defaults to `0.2`.
+      - `top_p`(`float`, optional): Nucleus sampling. Considers tokens with cumulative probability >= top_p. Defaults to `0.95`.
+      - `top_k`(`int`, optional): Top-k sampling. Considers the top 'k' most probable tokens. Defaults to `40`.
+      - `max_tokens`(`int`, required): The maximum number of new tokens to generate.
+      - `service_tier`(`Literal["auto", "standard_only"]`, optional): Specifies the service tier for the request. Defaults to `'standard_only'`.
+      - `stop_sequences`(`list[str]`, optional): Custom text sequences that will cause the model to stop generating.
+    - `chat_history_key`(`str`, optional): Key in the packet's generic_data to find
+    the conversation history.
+    - `rag_context_key`(`str`, optional): Key in the packet's generic_data to find
+    RAG context to inject.
+    - `system_prompt`(`str | Path`, optional): The system prompt (or path to one)
+    to instruct the model.
+    - `pattern`(`dict`, optional): A regex pattern used to post-process the model's response.
+    - `keep_before`(`bool`, optional): If True, keeps text before the 'pattern' match; otherwise, keeps text after.
+    - `extended_thinking`(`AnthropicThinkingArgs`, optional): Configuration for enabling or disabling the extended "thinking" feature.
+      - `type`(`Literal["enabled", "disabled"]`, optional): To disable or enable extended thinking. Defaults to `'disabled'`.
+      - `budget_tokens`(`int`, optional): The max tokens to use for internal reasoning. Must be ≥1024 and less than `max_tokens`. Defaults to `2048`.
+
     </details>
 
+- **AnthropicWithMCP**: Template for chat processing using Anthropic's Claude models with MCP tool support.
+
+    <details>
+    <summary>Attributes</summary>
+
+    - `init_args`(`LLMInitArgs`, required): Model arguments.
+      - `llm_model_name`(`str`, required): The name of the Claude model to be used. To see the list of all available Claude models visit the [official documentation](https://docs.anthropic.com/en/docs/about-claude/models/overview).
+    - `completion_args`(`LLMCompletionArgs`, required): Generation arguments to pass to the selected model.
+      - `temperature`(`float`, optional): Controls randomness. 0.0 = deterministic, >0.0 = random. Defaults to `0.2`.
+      - `top_p`(`float`, optional): Nucleus sampling. Considers tokens with cumulative probability >= top_p. Defaults to `0.95`.
+      - `top_k`(`int`, optional): Top-k sampling. Considers the top 'k' most probable tokens. Defaults to `40`.
+      - `max_tokens`(`int`, required): The maximum number of new tokens to generate.
+      - `service_tier`(`Literal["auto", "standard_only"]`, optional): Specifies the service tier for the request. Defaults to `'standard_only'`.
+      - `stop_sequences`(`list[str]`, optional): Custom text sequences that will cause the model to stop generating.
+    - `chat_history_key`(`str`, optional): Key in the packet's generic_data to find
+    the conversation history.
+    - `rag_context_key`(`str`, optional): Key in the packet's generic_data to find
+    RAG context to inject.
+    - `system_prompt`(`str | Path`, optional): The system prompt (or path to one)
+    to instruct the model.
+    - `pattern`(`dict`, optional): A regex pattern used to post-process the model's response.
+    - `keep_before`(`bool`, optional): If True, keeps text before the 'pattern' match; otherwise, keeps text after.
+    - `extended_thinking`(`AnthropicThinkingArgs`, optional): Configuration for enabling or disabling the extended "thinking" feature.
+      - `type`(`Literal["enabled", "disabled"]`, optional): To disable or enable extended thinking. Defaults to `'disabled'`.
+      - `budget_tokens`(`int`, optional): The max tokens to use for internal reasoning. Must be ≥1024 and less than `max_tokens`. Defaults to `2048`.
+    - `tools_key` (`str`, optional): Key used to extract the raw tools from the data container. Defaults to `""`.
+
+    </details>
 
 > [!TIP]
 > Use CLI command ```sinapsis info --example-template-config TEMPLATE_NAME``` to produce an example Agent config for the Template specified in ***TEMPLATE_NAME***.
@@ -110,19 +156,23 @@ templates:
   class_name: AnthropicTextGeneration
   template_input: InputTemplate
   attributes:
-    llm_model_name: claude-3-7-sonnet-latest
-    n_ctx: 9000
-    role: assistant
-    prompt: ''
+    init_args:
+      llm_model_name: 'claude-3-7-sonnet-latest'
+    completion_args:
+      temperature: 0.2
+      top_p: 0.95
+      top_k: 40
+      max_tokens: 4000
+      service_tier: standard_only
+      stop_sequences: null
+    chat_history_key: null
+    rag_context_key: null
     system_prompt: null
-    chat_format: chatml
-    context_max_len: 6
     pattern: null
     keep_before: true
-    budget_tokens: 2000
-    extended_thinking: false
-    max_tokens: 4000
-    temperature: 1.0
+    extended_thinking:
+      budget_tokens: 2048
+      type: disabled
     web_search: false
 ```
 
@@ -140,27 +190,32 @@ agent:
 templates:
 - template_name: InputTemplate
   class_name: InputTemplate
-  attributes: { }
+  attributes: {}
 
 - template_name: TextInput
   class_name: TextInput
   template_input: InputTemplate
   attributes:
     text: Describe this image in two sentences.
-- template_name: ImageReader
+
+- template_name: FolderImageDatasetCV2
   class_name: FolderImageDatasetCV2
   template_input: TextInput
   attributes:
     load_on_init : True
     data_dir: './artifacts'
     pattern : 'sunset.jpeg'
+
 - template_name: AnthropicMultiModal
   class_name: AnthropicMultiModal
-  template_input: ImageReader
+  template_input: FolderImageDatasetCV2
   attributes:
-    llm_model_name: claude-3-opus-20240229
-    max_tokens: 4000
-    temperature: 1
+    init_args:
+      llm_model_name: claude-3-opus-20240229
+    completion_args:
+      max_tokens: 4000
+      temperature: 1
+      service_tier: standard_only
 ```
 </details>
 

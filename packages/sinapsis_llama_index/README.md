@@ -6,11 +6,11 @@
     alt="" width="300">
 </a>
 <br>
-sinapsis-llama-index
+Sinapsis LLaMA Index
 <br>
 </h1>
 
-<h4 align="center">Package with support for the llama-index library to handle text processing </h4>
+<h4 align="center">Sinapsis templates and helpers for LlamaIndex integration</h4>
 
 <p align="center">
 <a href="#installation">🐍 Installation</a> •
@@ -54,11 +54,15 @@ with <code>uv</code>:
 
 
 <h2 id="features">🚀 Features</h2>
-* LLaMATextCompletion: Configures and initializes a chat completion model, supporting LLaMA, Mistral, and other compatible models.
-* QueryContextualizeFromFile: Template that adds a certain context to the query searching for keywords in the Documents
-added in the generic_data field of the DataContainer
-* QueryContextualizeFromText: Template that adds a certain context to the query searching for keywords
-in the ContextKeys dataclass from the helpers.
+
+- `EmbeddingNodeGenerator`: Splits text documents into chunks (TextNode objects) and generates vector embeddings using HuggingFace models.
+- `CodeEmbeddingNodeGenerator`: A specialized version of the node generator for intelligently splitting source code files with file exclusion.
+- `LLaMAIndexInsertNodes`: Inserts generated TextNode objects (with embeddings) into a PostgreSQL PGVectorStore table.
+- `LLaMAIndexNodeRetriever`: Retrieves the most relevant nodes from a vector table based on a query's semantic similarity.
+- `LLaMAIndexClearTable`: Clears all data from a specified PGVectorStore table.
+- `LLaMAIndexDeleteTable`: Permanently drops (deletes) a specified PGVectorStore table.
+- `LLaMAIndexRAGTextCompletion`: A full Retrieval-Augmented Generation (RAG) template that uses a retriever to find context and an LLM to generate an answer based on that context.
+
 > [!TIP]
 > Use CLI command ``` sinapsis info --all-template-names``` to show a list with all the available Template names installed with Sinapsis Data Tools.
 
@@ -70,7 +74,6 @@ For example, for **CodeEmbeddingNodeGenerator** use ```sinapsis info --example-t
 ```yaml
 agent:
   name: my_test_agent
-  description
 templates:
 - template_name: InputTemplate
   class_name: InputTemplate
@@ -79,41 +82,79 @@ templates:
   class_name: CodeEmbeddingNodeGenerator
   template_input: InputTemplate
   attributes:
-    chunk_size: '512'
-    separator: ' '
-    model_name: Snowflake/snowflake-arctic-embed-m-long
-    trust_remote_code: false
-    programming_language: python
-
+    splitter_args:
+      include_metadata: true
+      include_prev_next_rel: true
+      language: python
+      chunk_lines: 40
+      chunk_lines_overlap: 15
+      max_chars: 1500
+    embedding_config:
+      model_name: '`replace_me:<class ''str''>`'
+      max_length: null
+      query_instruction: null
+      text_instruction: null
+      normalize: true
+      embed_batch_size: 10
+      cache_folder: /path/to/.cache/sinapsis
+      trust_remote_code: false
+      device: auto
+      parallel_process: false
+    generic_keys: null
+    exclusion_config:
+      startswith_exclude: '`replace_me:list[str]`'
+      endswith_exclude: '`replace_me:list[str]`'
+      file_path_key: file_path
+      file_type_key: file_type
 ```
 
 <h2 id="example">📚 Usage example</h2>
-The following agent passes a text message through a TextPacket and retrieves a response from a LLM
+
+The following agent configuration demonstrates how to create an ingestion pipeline. It takes a simple text string, processes it with the `EmbeddingNodeGenerator` to create embedded nodes, and then inserts those nodes into a `PGVectorStore` database using `LLaMAIndexInsertNodes`.
+
 <details id='usage'><summary><strong><span style="font-size: 1.0em;"> Config</span></strong></summary>
 
 ```yaml
 agent:
   name: chat_completion
-  description: Agent with a chatbot that makes a call to the LLM model using a context uploaded from a file
+  description: Agent to feed a PGVector database with content from the official Sinapsis repositories
 
 templates:
 - template_name: InputTemplate
   class_name: InputTemplate
-  attributes: { }
+  attributes: {}
 
 - template_name: TextInput
   class_name: TextInput
   template_input: InputTemplate
   attributes:
-    text: what is AI?
-- template_name: EmbeddingNodeGenerator-1
-  class_name: CodeEmbeddingNodeGenerator
-  template_input: LLaMARAGTextCompletion
+    text: What is AI?
+
+- template_name: EmbeddingNodeGenerator
+  class_name: EmbeddingNodeGenerator
+  template_input: TextInput
   attributes:
-    chunk_size: 512
-    separator: ' '
-    model_name: Snowflake/snowflake-arctic-embed-m-long
-    trust_remote_code: True
+    splitter_args:
+      chunk_size: 512
+      chunk_overlap: 32
+      separator: ' '
+    embedding_config:
+      model_name: Snowflake/snowflake-arctic-embed-m-long
+      trust_remote_code: True
+      device: auto
+
+- template_name: LLaMAIndexInsertNodes
+  class_name: LLaMAIndexInsertNodes
+  template_input: EmbeddingNodeGenerator
+  attributes:
+    db_config:
+      user: postgres
+      password: password
+      port: 5432
+      host: localhost
+      db_name: sinapsis_db
+      table_name: sinapsis_code_s
+    input_nodes_key: EmbeddingNodeGenerator
 ```
 </details>
 <h2 id="webapps">🌐 Webapps</h2>

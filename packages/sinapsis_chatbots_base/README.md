@@ -6,7 +6,7 @@
     alt="" width="300">
 </a>
 <br>
-sinapsis-chatbots-base
+Sinapsis Chatbots Base
 <br>
 </h1>
 
@@ -50,27 +50,47 @@ with <code>uv</code>:
   pip install sinapsis-chatbots-base[all] --extra-index-url https://pypi.sinapsis.tech
 ```
 
-
 <h2 id="features">🚀 Features</h2>
-* LLMTextCompletionBase: Base class for all templates intended to perform chat (text) completion tasks
+
 <details>
-<summary id="configuration"><strong><span style="font-size: 1.25em;">🌍 General Attributes</span></strong></summary>
+<summary id="configuration"><strong><span style="font-size: 1.25em;">LLMTextCompletionBase</span></strong></summary>
 
-These attributes apply to `LLMTextCompletionBase``:
-- `llm_model_name`(Required): Name of the LLM to use.
-- `n_ctx`(Required): Maximum context size.
-- `role`: Role in the conversation (`system`, `user`, or `assistant`, default: `assistant`)
-- `system_prompt` (Optional): Defines the personality of the LLM (e.g., you are a python expert)
-- `prompt`: Custom instructions to guide the LLM response (default: empty).
-- `chat_format`: Chat message format (`llama-2`, `chatml`, etc., default: `chatml`).
-- `context_max_len`: Maximum conversation context length (default: 6).
-- `pattern`: Regex pattern to match delimiters (default: handles `<|...|>` and `</...>`).
-- `keep_before`: Determines which part of the matched text to return (default: `True`)
+Base class for all templates intended to perform chat (text) completion tasks.
 
+These attributes apply to `LLMTextCompletionBase`:
+- `init_args`(`LLMInitArgs`, required): Base model arguments, including the 'llm_model_name'.
+- `completion_args`(`LLMCompletionArgs`, optional): Base generation arguments, including 'max_tokens', 'temperature', 'top_p', and 'top_k'.
+- `chat_history_key`(`str`, optional): Key in the packet's generic_data to find
+the conversation history.
+- `rag_context_key`(`str`, optional): Key in the packet's generic_data to find
+RAG context to inject.
+- `system_prompt`(`str | Path`, optional): The system prompt (or path to one)
+to instruct the model.
+- `pattern`(`dict`, optional): A regex pattern used to post-process the model's response.
+- `keep_before`(`bool`, optional): If True, keeps text before the 'pattern' match; otherwise, keeps text after.
 
 </details>
-* QueryContextualizeFromFile: Template that adds a certain context to the query searching for keywords in the Documents
-added in the generic_data field of the DataContainer
+
+<details>
+<summary id="configuration"><strong><span style="font-size: 1.25em;">QueryContextualize</span></strong></summary>
+
+A base class for contextualizing queries based on certain keywords.
+
+These attributes apply to `QueryContextualize`:
+- `keywords`(`list[str]`, required): A list of keywords to be used for retrieving context.
+
+</details>
+
+<details>
+<summary id="configuration"><strong><span style="font-size: 1.25em;">QueryContextualizeFromFile</span></strong></summary>
+
+A subclass of QueryContextualize that retrieves context from files loaded into the `generic_data`.
+
+These attributes apply to `QueryContextualizeFromFile`:
+- `keywords`(`list[str]`, required): A list of keywords to be used for retrieving context.
+- `generic_keys`(`list[str]`, required): A list of keywords that can be used to retrieve specific context data from the `generic_data` of the container.
+
+</details>
 
 > [!TIP]
 > Use CLI command ``` sinapsis info --all-template-names``` to show a list with all the available Template names installed with Sinapsis Data Tools.
@@ -82,7 +102,7 @@ For example, for ***QueryContextualizeFromFile*** use ```sinapsis info --example
 
 ```yaml
 agent:
-  name: query_contextualize_template
+  name: my_test_agent
 templates:
 - template_name: InputTemplate
   class_name: InputTemplate
@@ -93,7 +113,6 @@ templates:
   attributes:
     keywords: '`replace_me:list[str]`'
     generic_keys: '`replace_me:list[str]`'
-
 ```
 
 <h2 id="example">📚 Usage example</h2>
@@ -108,7 +127,8 @@ agent:
 templates:
 - template_name: InputTemplate
   class_name: InputTemplate
-  attributes: { }
+  attributes: {}
+
 - template_name: PyPDFLoaderWrapper
   class_name: PyPDFLoaderWrapper
   template_input: InputTemplate
@@ -122,15 +142,14 @@ templates:
   template_input: PyPDFLoaderWrapper
   attributes:
     text: what is AI?
+
 - template_name: QueryContextualizeFromFile
   class_name: QueryContextualizeFromFile
   template_input: TextInput
   attributes:
     keywords: 'Artificial Intelligence'
-    generic_keys: 'PyPDFLoaderWrapper
-
+    generic_keys: 'PyPDFLoaderWrapper'
 ```
-
 
 <h2 id="documentation">📙 Documentation</h2>
 

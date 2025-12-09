@@ -35,7 +35,7 @@ services:
     environment:
       FEED_DB_FROM_PDF_PATH: ${FEED_DB_FROM_PDF_PATH}
       FEED_DB_DEFAULT_PATH: ${FEED_DB_DEFAULT_PATH}
-      AGENT_CONFIG_PATH: /app/packages/sinapsis_llama_index/src/sinapsis_llama_index/configs/llama_index_rag_chat.yaml
+      AGENT_CONFIG_PATH: /app/packages/sinapsis_llama_index/src/sinapsis_llama_index/configs/llama_index_rag.yaml
   postgres:
       extends:
         file: compose_db.yaml

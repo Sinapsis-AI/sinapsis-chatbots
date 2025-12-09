@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import importlib
-from typing import Callable
+from collections.abc import Callable
 
 _root_lib_path = "sinapsis_chatbots_base.templates"
 

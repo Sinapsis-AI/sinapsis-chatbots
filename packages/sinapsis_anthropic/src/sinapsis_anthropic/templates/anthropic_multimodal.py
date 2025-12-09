@@ -12,26 +12,40 @@ AnthropicMultiModalUIProperties.tags.extend([Tags.MULTIMODAL])
 
 
 class AnthropicMultiModal(AnthropicTextGeneration):
-    """Template for multi-modal chat processing using Ant   hropic's Claude models.
+    """Template for multi-modal chat processing using Anthropic's Claude models.
 
     This template provides support for text-to-text and image-to-text conversational
     chatbots using Anthropic's Claude models that support multi-modal inputs. It enables
     processing of both text and image inputs to generate text responses.
 
     Usage example:
-      agent:
-        name: my_claude_agent
-        templates:
-          - template_name: InputTemplate
-            class_name: InputTemplate
-            attributes: {}
-          - template_name: AnthropicMultiModal
-            class_name: AnthropicMultiModal
-            template_input: InputTemplate
-            attributes:
-                llm_model_name: claude-3-opus-20240229
-                max_tokens: 4000
-                temperature: 1
+
+    agent:
+      name: my_claude_agent
+    templates:
+    - template_name: InputTemplate
+      class_name: InputTemplate
+    - template_name: AnthropicMultiModal
+      class_name: AnthropicMultiModal
+      template_input: InputTemplate
+      attributes:
+        init_args:
+          llm_model_name: claude-3-opus-20240229
+        completion_args:
+          max_tokens: 1024
+          temperature: 1
+          top_p: 0.95
+          top_k: 40
+          service_tier: standard_only
+          stop_sequences: null
+        chat_history_key: null
+        rag_context_key: null
+        system_prompt: null
+        pattern: null
+        keep_before: true
+        extended_thinking:
+          type: disabled
+        web_search: false
 
     The class handles conversion of image data to base64 format required by the Anthropic API,
     and properly formats multi-modal conversations for the API.
@@ -44,8 +58,7 @@ class AnthropicMultiModal(AnthropicTextGeneration):
 
     @staticmethod
     def process_content(container: DataContainer) -> list:
-        """
-        Processes images from a DataContainer and converts them to the Anthropic API format.
+        """Processes images from a DataContainer and converts them to the Anthropic API format.
 
         This method extracts images from the provided container and converts each image
         to a base64-encoded representation formatted according to Anthropic's multimodal
@@ -75,9 +88,7 @@ class AnthropicMultiModal(AnthropicTextGeneration):
         return content
 
     def generate_response(self, container: DataContainer) -> DataContainer:
-        """
-        Processes a list of `TextPacket` objects, generating a response for each
-        text packet.
+        """Processes a list of `TextPacket` objects, generating a response for each text packet.
 
         Args:
             container (DataContainer): Container where the incoming message and possibly images
@@ -86,7 +97,6 @@ class AnthropicMultiModal(AnthropicTextGeneration):
         Returns:
             DataContainer: Updated container with the generated text responses from the LLM.
         """
-
         self.logger.debug("Chatbot in progress")
         responses = []
         messages = []

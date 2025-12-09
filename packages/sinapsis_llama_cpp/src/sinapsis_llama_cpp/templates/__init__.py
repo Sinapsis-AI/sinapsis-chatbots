@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 import importlib
-from typing import Callable
+from collections.abc import Callable
 
 _root_lib_path = "sinapsis_llama_cpp.templates"
 
 _template_lookup = {
-    "LLama4MultiModal": f"{_root_lib_path}.llama4_multimodal",
-    "LLaMATextCompletion": f"{_root_lib_path}.llama_text_completion",
     "LLaMATextCompletionWithMCP": f"{_root_lib_path}.llama_text_completion_mcp",
-    "LLama4TextToText": f"{_root_lib_path}.llama_4_text_to_text",
+    "LLaMATextCompletion": f"{_root_lib_path}.llama_text_completion",
+    "LLama4MultiModal": f"{_root_lib_path}.llama4_multimodal",
+    "LLama4TextToText": f"{_root_lib_path}.llama4_text_to_text",
+    "StreamingLLaMATextCompletion": f"{_root_lib_path}.streaming_llama_text_completion",
 }
 
 

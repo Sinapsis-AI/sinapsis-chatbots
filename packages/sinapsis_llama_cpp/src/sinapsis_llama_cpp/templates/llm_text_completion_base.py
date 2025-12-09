@@ -19,8 +19,7 @@ from sinapsis_llama_cpp.helpers.llama_keys import (
 
 
 class LLMTextCompletionAttributes(TemplateAttributes):
-    """
-    Attributes for BaseLLMTextCompletion.
+    """Attributes for BaseLLMTextCompletion.
 
     This class defines the attributes required for the LLM-based text completion
     template.
@@ -60,8 +59,7 @@ class LLMTextCompletionAttributes(TemplateAttributes):
 
 
 class LLMTextCompletionBase(Template):
-    """
-    Base template to get a response message from any LLM.
+    """Base template to get a response message from any LLM.
 
     This is a base template class for LLM-based text completion. It is designed to work
     with different LLM models (e.g., Llama, GPT). The base functionality includes
@@ -73,8 +71,7 @@ class LLMTextCompletionBase(Template):
     AttributesBaseModel = LLMTextCompletionAttributes
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
-        """
-        Initializes the base template with the provided attributes and initializes
+        """Initializes the base template with the provided attributes and initializes
         the LLM model.
 
         Args:
@@ -87,8 +84,7 @@ class LLMTextCompletionBase(Template):
         self._clear_context()
 
     def _set_context(self, conversation_id: str) -> None:
-        """
-        Sets the context for the specified conversation ID, ensuring that a deque
+        """Sets the context for the specified conversation ID, ensuring that a deque
         for the conversation is available to store conversation history.
 
         Args:
@@ -98,16 +94,14 @@ class LLMTextCompletionBase(Template):
             self.context[conversation_id] = deque(maxlen=self.attributes.context_max_len)
 
     def _clear_context(self) -> None:
-        """
-        Clears the context, resetting the stored conversation history for
+        """Clears the context, resetting the stored conversation history for
         all conversations.
         """
         self.context: dict = {}
 
     @abstractmethod
     def init_llm_model(self) -> LLM_MODEL_TYPE:
-        """
-        Initializes the LLM model. This method must be implemented by subclasses
+        """Initializes the LLM model. This method must be implemented by subclasses
         to set up the specific model.
 
         Returns:
@@ -117,8 +111,7 @@ class LLMTextCompletionBase(Template):
 
     @abstractmethod
     def get_response(self, input_message: str | list) -> str | None:
-        """
-        Generates a response from the model based on the provided text input.
+        """Generates a response from the model based on the provided text input.
 
         Args:
             input_message (str | list): The input text or prompt to which the model
@@ -134,8 +127,7 @@ class LLMTextCompletionBase(Template):
         raise NotImplementedError("Must be implemented by the subclass.")
 
     def reset_llm_state(self) -> None:
-        """
-        Resets the internal state of the language model, ensuring that no memory,
+        """Resets the internal state of the language model, ensuring that no memory,
         context, or cached information from previous interactions persists in the
         current session.
 
@@ -149,8 +141,7 @@ class LLMTextCompletionBase(Template):
         self.llm.reset()
 
     def infer(self, text: str | list) -> str | None:
-        """
-        Obtains a response from the model, handling any errors or issues by resetting
+        """Obtains a response from the model, handling any errors or issues by resetting
         the model state if necessary.
 
         Args:
@@ -167,8 +158,7 @@ class LLMTextCompletionBase(Template):
             return self.get_response(text)
 
     def append_to_context(self, conv_id: str, role: str, content: str | None) -> None:
-        """
-        Appends a new message to the conversation context for the given `conv_id`.
+        """Appends a new message to the conversation context for the given `conv_id`.
 
         Args:
             conv_id (str): The conversation ID.
@@ -179,8 +169,7 @@ class LLMTextCompletionBase(Template):
             self.context[conv_id].append({LLMChatKeys.role: role, LLMChatKeys.content: content})
 
     def return_text_packet(self, packet: list[TextPacket]) -> list[TextPacket]:
-        """
-        Processes a list of `TextPacket` objects, generating a response for each
+        """Processes a list of `TextPacket` objects, generating a response for each
         text packet.
 
         If the packet is empty, it generates a new response based on the prompt.
@@ -195,7 +184,6 @@ class LLMTextCompletionBase(Template):
             list[TextPacket]: A list of updated text packets with the model's response
             added as content.
         """
-
         self.logger.debug("Chatbot in progress")
         if packet:
             conv_id = packet[0].id
@@ -217,8 +205,7 @@ class LLMTextCompletionBase(Template):
         return packet
 
     def execute(self, container: DataContainer) -> DataContainer:
-        """
-        Executes the LLMChatTemplate by processing the input `DataContainer`
+        """Executes the LLMChatTemplate by processing the input `DataContainer`
         and generating a response.
 
         This method is responsible for handling the conversation flow, processing the input,

@@ -49,7 +49,7 @@ class Mem0Base(Template, ABC):
             else Memory.from_config(self.attributes.memory_config)
         )
 
-    def _generate_response(self, method_name: str, **kwargs) -> list[dict[str, Any]] | dict[str, Any] | None:
+    def _generate_response(self, method_name: str, **kwargs: dict) -> list[dict[str, Any]] | dict[str, Any] | None:
         """Dynamically call a method on the underlying memory backend (local or managed).
 
         This method routes calls to either a `MemoryClient` or `Memory` instance,
@@ -59,6 +59,8 @@ class Mem0Base(Template, ABC):
 
         Args:
             method_name (str): The name of the method to call on the memory instance.
+            kwargs (dict): Keyword arguments to pass to the method.
+
         Returns:
             list[dict[str, Any]] | dict[str, Any] | None: The result of the method call, or None if failed.
         """

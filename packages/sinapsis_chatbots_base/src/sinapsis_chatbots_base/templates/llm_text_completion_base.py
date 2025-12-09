@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-
 from abc import abstractmethod
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any
 
 import torch
+from pydantic import BaseModel, Field
 from sinapsis_core.data_containers.data_packet import DataContainer, TextPacket
 from sinapsis_core.template_base import Template
 from sinapsis_core.template_base.base_models import (
@@ -18,6 +18,31 @@ from sinapsis_chatbots_base.helpers.llm_keys import LLMChatKeys
 from sinapsis_chatbots_base.helpers.tags import Tags
 
 
+class LLMInitArgs(BaseModel):
+    """Base arguments for initializing any LLM.
+
+    Attributes:
+        llm_model_name (str): The name or path of the LLM model to use
+                            (e.g., 'claude-3-7-sonnet-latest', 'TheBloke/Llama-2-7B-GGUF').
+    """
+
+    llm_model_name: str
+
+
+class LLMCompletionArgs(BaseModel):
+    """Base arguments for controlling LLM text generation (sampling).
+
+    Attributes:
+        temperature (float): Controls randomness. 0.0 = deterministic, >0.0 = random. Defaults to `0.2`.
+        top_p (float): Nucleus sampling. Considers tokens with cumulative probability >= top_p. Defaults to `0.95`.
+        top_k (int): Top-k sampling. Considers the top 'k' most probable tokens. Defaults to `40`.
+    """
+
+    temperature: float = 0.2
+    top_p: float = 0.95
+    top_k: int = 40
+
+
 class LLMTextCompletionAttributes(TemplateAttributes):
     """Configuration attributes for LLM-based text completion templates.
 
@@ -25,32 +50,25 @@ class LLMTextCompletionAttributes(TemplateAttributes):
     including model settings, conversation context management, and prompt handling.
 
     Attributes:
-        llm_model_name (str): The name of the LLM model to use.
-        n_ctx (int): Maximum context size for the model.
-        role (Literal["system", "user", "assistant"]): The role in the conversation,
-            such as "system", "user", or "assistant". Defaults to "assistant".
-        chat_history_key (str): Key to identify chat history in each text packet's generic data.
-        prompt (str | None): A set of instructions provided to the LLM to guide how to respond.
-            The default
-            value is an empty string.
-        system_prompt (str | None): The prompt that indicates the LLM how to behave
-            (e.g. you are an expert on...)
-        chat_format (str | None): The format for the chat messages
-            (e.g., llama-2, chatml, etc.).
-        pattern (str | None): A regex pattern to match delimiters. The default value is
-            `<|...|>` and `</...>`.
-        keep_before (bool): If True, returns the portion before the first match;
-            if False, returns the portion after the first match.
+        init_args (LLMInitArgs): Base model arguments, including the 'llm_model_name'.
+        completion_args (LLMCompletionArgs): Base generation arguments, including
+            'max_tokens', 'temperature', 'top_p', and 'top_k'.
+        chat_history_key (str | None): Key in the packet's generic_data to find
+            the conversation history.
+        rag_context_key (str | None): Key in the packet's generic_data to find
+            RAG context to inject.
+        system_prompt (str | Path | None): The system prompt (or path to one)
+            to instruct the model.
+        pattern (str | None): A regex pattern used to post-process the model's response.
+        keep_before (bool): If True, keeps text before the 'pattern' match; otherwise,
+            keeps text after.
     """
 
-    llm_model_name: str
-    n_ctx: int = 9000
-    role: Literal["system", "user", "assistant"] = "assistant"
+    init_args: LLMInitArgs
+    completion_args: LLMCompletionArgs = Field(default_factory=LLMCompletionArgs)
     chat_history_key: str | None = None
     rag_context_key: str | None = None
-    prompt: str | None = None
     system_prompt: str | Path | None = None
-    chat_format: str = "chatml"
     pattern: str | None = None
     keep_before: bool = True
 
@@ -105,7 +123,8 @@ class LLMTextCompletionBase(Template):
         """Safely cancels the current execution and releases GPU memory.
 
         Deletes the current instance of the loaded language model and resets the corresponding
-        attribute to `None`."""
+        attribute to `None`.
+        """
         del self.llm
         self.llm = None
 
@@ -265,14 +284,16 @@ class LLMTextCompletionBase(Template):
             DataContainer: The output data container with the model's response added to the `texts` attribute.
         """
         if not container.texts:
-            if self.attributes.prompt:
-                container.texts.append(TextPacket(content=self.attributes.prompt))
-            else:
-                self.logger.debug("No need to process response.")
-                return container
+            self.logger.debug("Container has no texts to process. Returning.")
+            return container
 
         return self.generate_response(container)
 
     def reset_state(self, template_name: str | None = None) -> None:
+        """Resets the template's state, ensuring the LLM model is released.
+
+        Args:
+            template_name (str | None, optional): The name of the template being reset. Defaults to None.
+        """
         self.cancel_execution()
         super().reset_state(template_name)

@@ -2,23 +2,24 @@
 from typing import Any
 
 import gradio as gr
-import yaml  # type:ignore[import-untyped]
 from sinapsis.webapp.chatbot_base import BaseChatbot, ChatbotConfig, generic_agent_builder
 from sinapsis_core.utils.env_var_keys import AGENT_CONFIG_PATH, GRADIO_SHARE_APP, SINAPSIS_CACHE_DIR
 from sinapsis_core.utils.logging_utils import sinapsis_logger
-from sinapsis_llama_index.helpers.llama_index_pg_retriever import delete_table
 from sinapsis_llama_index.helpers.rag_env_vars import FEED_DB_DEFAULT_PATH, FEED_DB_FROM_PDF_PATH
 
 CONFIG_FILE = (
-    AGENT_CONFIG_PATH or "packages/sinapsis_llama_index/src/sinapsis_llama_index/configs/llama_index_rag_chat.yaml"
+    AGENT_CONFIG_PATH
+    or "packages/sinapsis_llama_index/src/sinapsis_llama_index/configs/default/llama_cpp_rag_chat.yaml"
 )
 
 FEED_DB_CONFIG_FROM_PDF = (
-    FEED_DB_FROM_PDF_PATH or "packages/sinapsis_llama_index/src/sinapsis_llama_index/configs/feed_db_pdf.yaml"
+    FEED_DB_FROM_PDF_PATH or "packages/sinapsis_llama_index/src/sinapsis_llama_index/configs/default/feed_db_pdf.yaml"
 )
 FEED_DB_DEFAULT_CONFIG = (
-    FEED_DB_DEFAULT_PATH or "packages/sinapsis_llama_index/src/sinapsis_llama_index/configs/feed_db_git_all_repos.yaml"
+    FEED_DB_DEFAULT_PATH or "packages/sinapsis_llama_index/src/sinapsis_llama_index/configs/default/feed_db_git.yaml"
 )
+
+TABLE_DELETE_CONFIG = "packages/sinapsis_llama_index/src/sinapsis_llama_index/configs/delete_table.yaml"
 
 
 def clear_database() -> gr.Markdown:
@@ -27,20 +28,8 @@ def clear_database() -> gr.Markdown:
     Returns:
         gr.Markdown: A markdown message indicating completion of the operation.
     """
-    with open(CONFIG_FILE, "r", encoding="utf-8") as config_file:
-        config_dict: dict = yaml.safe_load(config_file)
-
-    templates = config_dict.get("templates", [])
-    for template in templates:
-        if template.get("template_name", False) == "LLaMAIndexNodeRetriever":
-            database_attrs = template.get("attributes")
-            database_name = database_attrs.get("db_name")
-            table_name = database_attrs.get("table_name")
-            dimension = database_attrs.get("database_dimension")
-            user = database_attrs.get("user")
-            password = database_attrs.get("password")
-
-            delete_table(database_name, table_name, user, password, dimension)
+    agent = generic_agent_builder(TABLE_DELETE_CONFIG)
+    agent()
     return gr.Markdown("### Finished clearing context")
 
 
@@ -114,7 +103,7 @@ class RAGChatbot(BaseChatbot):
         )
         clear_db.click(clear_database, outputs=status_msg)
 
-    def _inject_header_components(self):
+    def _inject_header_components(self) -> None:
         """Extends the parent's method by adding RAG-specific buttons."""
         super()._inject_header_components()
         self._add_rag_components()

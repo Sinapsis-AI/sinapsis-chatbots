@@ -29,8 +29,7 @@ class QueryContextualize(Template, abc.ABC):
 
     @abc.abstractmethod
     def retrieve_context(self, keyword: str, context_data: dict | Any) -> str:
-        """
-        Abstract method to retrieve context related to a given keyword.
+        """Abstract method to retrieve context related to a given keyword.
 
         This method must be implemented by subclasses. The implementation should
         return context information associated with the provided `keyword`.
@@ -47,9 +46,7 @@ class QueryContextualize(Template, abc.ABC):
         """
 
     def load_context(self, container: DataContainer) -> None:
-        """
-        Loads context into the text packets within the provided `DataContainer`
-        based on keywords.
+        """Loads context into the text packets within the provided `DataContainer` based on keywords.
 
         This method iterates over the text packets in the container and appends the
         retrieved context for each keyword found in the packet's content. It retrieves
@@ -64,7 +61,6 @@ class QueryContextualize(Template, abc.ABC):
         packet's content, and appends the corresponding context
         (retrieved via `retrieve_context`) to the content if found.
         """
-
         for text_packet in container.texts:
             context: str = ""
             for keyword in self.attributes.keywords:
@@ -76,8 +72,8 @@ class QueryContextualize(Template, abc.ABC):
 
     @abc.abstractmethod
     def add_context_to_content(self, kwd: str, container: DataContainer) -> str:
-        """
-        Depending on the keyword, append the additional context to the current one
+        """Depending on the keyword, append the additional context to the current one.
+
         Args:
              kwd (str): kwd to be added in the context
              container (DataContainer): Container where additional context comes from
@@ -86,8 +82,7 @@ class QueryContextualize(Template, abc.ABC):
         """
 
     def execute(self, container: DataContainer) -> DataContainer:
-        """
-        Executes the contextualization process on the provided DataContainer.
+        """Executes the contextualization process on the provided DataContainer.
 
         Args:
             container (DataContainer): A container holding the texts that need

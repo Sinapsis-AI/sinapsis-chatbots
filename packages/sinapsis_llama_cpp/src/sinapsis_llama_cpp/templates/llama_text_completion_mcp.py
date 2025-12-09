@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 import json
 from typing import Any, cast
 
@@ -25,13 +24,90 @@ LLaMAMultiModalUIProperties.tags.extend([Tags.MCP])
 
 
 class LLaMATextCompletionWithMCP(LLaMATextCompletion):
-    """Template for LLaMA text completion with MCP tool integration."""
+    """Template for LLaMA text completion with MCP tool integration.
+
+    Extends LLaMATextCompletion to handle multi-turn conversations involving
+    tool use (function calling) based on the Model Context Protocol (MCP).
+    It parses tool definitions, potentially modifies the system prompt, detects
+    tool calls from the model (either via native support or text parsing),
+    manages state across turns, and formats tool results for follow-up calls.
+
+    Usage example:
+
+    agent:
+      name: my_test_agent
+    templates:
+    - template_name: InputTemplate
+      class_name: InputTemplate
+      attributes: {}
+    - template_name: LLaMATextCompletion
+      class_name: LLaMATextCompletion
+      template_input: InputTemplate
+      attributes:
+        init_args:
+          llm_model_name: 'TheBloke/Mistral-7B-Instruct-v0.2-GGUF'
+          llm_model_file: 'mistral-7b-instruct-v0.2.Q2_K.gguf'
+          n_gpu_layers: -1
+          use_mmap: true
+          use_mlock: false
+          seed: 42
+          n_ctx: 8192
+          n_batch: 512
+          n_ubatch: 512
+          n_threads: null
+          n_threads_batch: null
+          flash_attn: true
+          chat_format: null
+          verbose: true
+        completion_args:
+          temperature: 0.2
+          top_p: 0.95
+          top_k: 40
+          max_tokens: 4096
+          min_p: 0.05
+          stop: null
+          seed: 42
+          repeat_penalty: 1.0
+          presence_penalty: 0.0
+          frequency_penalty: 0.0
+          logit_bias: null
+        chat_history_key: null
+        rag_context_key: null
+        system_prompt: You are an expert in AI.
+        pattern: null
+        keep_before: true
+        tools_key: "Tools"
+        max_tool_retries: 3
+        add_tool_to_prompt: true
+    """
 
     UIProperties = LLaMAMultiModalUIProperties
     system_prompt: str | None
 
     class AttributesBaseModel(LLaMATextCompletion.AttributesBaseModel):
-        generic_key: str = ""
+        """Attributes for LLaMA-CPP MCP template.
+
+        Attributes:
+            init_args (LLaMAInitArgs): LLaMA model arguments, including the 'llm_model_name'.
+            completion_args (LLaMACompletionArgs): LLaMA generation arguments, including
+                'max_tokens', 'temperature', 'top_p', and 'top_k', among others.
+            chat_history_key (str | None): Key in the packet's generic_data to find
+                the conversation history.
+            rag_context_key (str | None): Key in the packet's generic_data to find
+                RAG context to inject.
+            system_prompt (str | Path | None): The system prompt (or path to one)
+                to instruct the model.
+            pattern (str | None): A regex pattern used to post-process the model's response.
+            keep_before (bool): If True, keeps text before the 'pattern' match; otherwise,
+                keeps text after.
+            tools_key (str): Key used to extract the raw tools from the data container. Defaults
+                to `""`.
+            max_tool_retries (int): Maximum consecutive tool execution failures before stopping. Defaults to `3`.
+            add_tool_to_prompt (bool): Whether to automatically append tool descriptions to the system prompt.
+                Defaults to `True`.
+        """
+
+        tools_key: str = ""
         max_tool_retries: int = 3
         add_tool_to_prompt: bool = True
 
@@ -56,7 +132,15 @@ class LLaMATextCompletionWithMCP(LLaMATextCompletion):
         self.system_prompt = current_prompt + tools_section
 
     def get_response(self, input_message: str | list) -> str | None:
-        """Generate response from model with tool support."""
+        """Generates a response from the model, handling potential tool calls and partial responses.
+
+        Args:
+            input_message (str | list): The input messages list for the LLM.
+
+        Returns:
+            str | None: The final response text, the accumulated partial response text
+                        if tool calls are pending, or None/error string if generation failed.
+        """
         self.logger.debug(f"Query is {input_message}")
         chat_completion = self._create_chat_completion(input_message)
         response_text = self._process_chat_completion(chat_completion)
@@ -74,26 +158,42 @@ class LLaMATextCompletionWithMCP(LLaMATextCompletion):
         else:
             return response_text
 
-    def _create_chat_completion(self, input_message: str | list):
-        """Create chat completion with appropriate format."""
+    def _create_chat_completion(self, input_message: str | list) -> CreateChatCompletionResponse:
+        """Calls the LLaMA model to create a chat completion, handling potential errors and retries.
+
+        Args:
+            input_message (str | list): The list of messages to send to the model.
+
+        Returns:
+            CreateChatCompletionResponse | None: The response object from llama-cpp,
+                                                 or None if generation failed after retries.
+        """
+        completion_args = self.attributes.completion_args.model_dump(exclude_none=True)
         try:
-            if self.attributes.chat_format == LLaMAModelKeys.chatml_function_calling:
+            if self.attributes.init_args.chat_format == LLaMAModelKeys.chatml_function_calling:
                 return self.llm.create_chat_completion(
-                    messages=input_message, tools=self.available_tools, tool_choice="auto"
+                    messages=input_message, tools=self.available_tools, tool_choice="auto", **completion_args
                 )
-            return self.llm.create_chat_completion(messages=input_message)
-        except IndexError:
+            return self.llm.create_chat_completion(messages=input_message, **completion_args)
+        except (IndexError, AttributeError):
             self.reset_llm_state()
             return self._create_chat_completion(input_message)
 
-    def _process_chat_completion(self, chat_completion) -> str:
-        """Process chat completion response."""
+    def _process_chat_completion(self, chat_completion: CreateChatCompletionResponse) -> str:
+        """Processes the raw chat completion response to extract text and tool calls.
+
+        Args:
+            chat_completion (CreateChatCompletionResponse): The response object from llama-cpp.
+
+        Returns:
+            str: The extracted response text, potentially including placeholder text
+                 for detected tool calls. Returns an empty string if processing fails.
+        """
         chat_completion = cast(CreateChatCompletionResponse, chat_completion)
         llm_response_choice = chat_completion[LLMChatKeys.choices][0]
         finish_reason = llm_response_choice[MCPKeys.finish_reason]
         message = llm_response_choice[LLMChatKeys.message]
 
-        # self.logger.debug(llm_response_choice)
         self.tool_calls = []
 
         if finish_reason == MCPKeys.tool_calls:
@@ -101,7 +201,14 @@ class LLaMATextCompletionWithMCP(LLaMATextCompletion):
         return self._handle_regular_response(message)
 
     def _handle_function_calling_response(self, message: dict) -> str:
-        """Handle chatml-function-calling response format."""
+        """Handles responses using the native chatml-function-calling format.
+
+        Args:
+            message (dict[str, Any]): The message dictionary from the LLM response.
+
+        Returns:
+            str: The response text, including placeholders for tool calls made.
+        """
         response_parts = []
 
         if message[LLMChatKeys.content]:
@@ -127,7 +234,15 @@ class LLaMATextCompletionWithMCP(LLaMATextCompletion):
         return "\n".join(response_parts)
 
     def _handle_regular_response(self, message: dict) -> str:
-        """Handle regular chatml response format."""
+        """Handles responses by extracting potential tool calls from the text content.
+
+        Args:
+            message (dict[str, Any]): The message dictionary from the LLM response.
+
+        Returns:
+            str: The original response text if no tools are extracted, or the text
+                 including placeholders if tool calls were found. Returns empty string on error.
+        """
         response_text = message[LLMChatKeys.content]
         self.tool_calls = extract_tool_calls_from_content(response_text)
 
@@ -148,7 +263,14 @@ class LLaMATextCompletionWithMCP(LLaMATextCompletion):
         return response_text
 
     def get_extra_context(self, packet: TextPacket) -> str | None:
-        """Override to get state from packet and format tool results if present."""
+        """Loads MCP state from the packet and calls the parent method for RAG context.
+
+        Args:
+            packet (TextPacket): The incoming text packet containing potential state data.
+
+        Returns:
+            str | None: RAG context string from the parent, or None.
+        """
         self.tool_results = packet.generic_data.get(MCPKeys.tool_results, [])
         self.partial_response = packet.generic_data.get(MCPKeys.partial_response, "")
         self.partial_query = packet.generic_data.get(MCPKeys.partial_query, [])
@@ -158,7 +280,11 @@ class LLaMATextCompletionWithMCP(LLaMATextCompletion):
         return super().get_extra_context(packet)
 
     def num_elements(self) -> int:
-        """Control WhileLoop continuation based on pending tool calls."""
+        """Controls WhileLoop continuation based on pending tool calls and retries.
+
+        Returns:
+            int: 1 to continue loop (pending calls within retry limit), -1 to stop.
+        """
         if not self._has_pending_tool_calls():
             return -1
 
@@ -169,19 +295,41 @@ class LLaMATextCompletionWithMCP(LLaMATextCompletion):
         return 1
 
     def _has_pending_tool_calls(self) -> bool:
-        """Check if there are pending tool calls."""
+        """Checks if the last processed container indicates pending tool calls.
+
+        Returns:
+            bool: True if `tool_calls` key exists in the first text packet's
+                  generic_data of the last container, False otherwise.
+        """
         if not hasattr(self, MCPKeys.last_container) or not self._last_container:
             return False
         return any(MCPKeys.tool_calls in packet.generic_data for packet in self._last_container.texts)
 
     def _format_tool_results_for_conversation(self, tool_results: list[dict[str, Any]]) -> list[dict]:
-        """Format tool execution results based on chat format."""
-        if self.attributes.chat_format == LLaMAModelKeys.chatml_function_calling:
+        """Formats tool execution results into messages suitable for the LLM conversation history.
+
+        Args:
+            tool_results (list[dict[str, Any]]): A list of tool result dictionaries, expected
+                                                 to contain 'tool_use_id', 'content', and optionally 'is_error'.
+
+        Returns:
+            list[dict]: A list of messages formatted for the conversation history
+                        (either as 'tool' role or 'user' role).
+        """
+        if self.attributes.init_args.chat_format == LLaMAModelKeys.chatml_function_calling:
             return self._format_as_tool_messages(tool_results)
         return self._format_as_user_messages(tool_results)
 
-    def _format_as_tool_messages(self, tool_results: list[dict[str, Any]]) -> list[dict]:
-        """Format tool results as tool role messages."""
+    @staticmethod
+    def _format_as_tool_messages(tool_results: list[dict[str, Any]]) -> list[dict]:
+        """Formats tool results as 'tool' role messages for chatml-function-calling.
+
+        Args:
+            tool_results (list[dict[str, Any]]): A list of tool result dictionaries.
+
+        Returns:
+            list[dict]: A list of messages formatted with role 'tool', including 'tool_call_id'.
+        """
         tool_messages = []
         for tool in tool_results:
             tool_call_id = tool.get(MCPKeys.tool_use_id, "unknown")
@@ -202,8 +350,16 @@ class LLaMATextCompletionWithMCP(LLaMATextCompletion):
             )
         return tool_messages
 
-    def _format_as_user_messages(self, tool_results: list[dict[str, Any]]) -> list[dict]:
-        """Format tool results as user messages."""
+    @staticmethod
+    def _format_as_user_messages(tool_results: list[dict[str, Any]]) -> list[dict]:
+        """Formats tool results as 'user' role messages for regular chat formats.
+
+        Args:
+            tool_results (list[dict[str, Any]]): A list of tool result dictionaries.
+
+        Returns:
+            list[dict]: A list of messages formatted with role 'user', containing formatted result text.
+        """
         tool_messages = []
         for tool in tool_results:
             tool_call_id = tool.get(MCPKeys.tool_use_id, "unknown")
@@ -232,10 +388,18 @@ class LLaMATextCompletionWithMCP(LLaMATextCompletion):
         return tool_messages
 
     def generate_response(self, container: DataContainer) -> DataContainer:
-        """Process text packets and generate responses."""
+        """Processes text packets, handles MCP state, generates responses including tool calls.
+
+        Args:
+            container (DataContainer): Input container, possibly with tool results in packet generic_data.
+
+        Returns:
+            DataContainer: Updated container. If tool calls are pending, packet generic_data
+                           contains state. If final, container.texts holds the response.
+        """
         self._last_container = container
         self.logger.debug("Chatbot in progress")
-        raw_tools = self._get_generic_data(container, self.attributes.generic_key)
+        raw_tools = self._get_generic_data(container, self.attributes.tools_key)
         self.available_tools = make_tools_llama_compatible(raw_tools)
         if self.attributes.add_tool_to_prompt:
             self._add_tools_to_system_prompt()
@@ -272,14 +436,23 @@ class LLaMATextCompletionWithMCP(LLaMATextCompletion):
         return container
 
     def _store_conversation_state(self, packet: TextPacket, response: str) -> None:
-        """Store conversation state for tool execution."""
+        """Stores intermediate MCP state in the provided packet's generic_data.
+
+        Args:
+            packet (TextPacket): The text packet associated with the current turn to store state within.
+            response (str | None): The partial text response generated in this turn, or None.
+        """
         packet.generic_data[MCPKeys.tool_calls] = self.tool_calls
         packet.generic_data[MCPKeys.partial_query] = self.partial_query
         packet.generic_data[MCPKeys.partial_response] = response
         packet.generic_data.pop(MCPKeys.tool_results, None)
 
     def _cleanup_conversation_state(self, packet: TextPacket) -> None:
-        """Clean up conversation state when done."""
+        """Clears MCP state variables on self and removes them from the provided packet's generic_data.
+
+        Args:
+            packet (TextPacket): The text packet from which to remove state keys.
+        """
         for key in [MCPKeys.tool_calls, MCPKeys.partial_query, MCPKeys.partial_response, MCPKeys.tool_results]:
             packet.generic_data.pop(key, None)
 

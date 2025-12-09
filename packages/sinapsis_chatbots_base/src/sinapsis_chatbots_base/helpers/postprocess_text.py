@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
-"""This module provides utilities for cleaning and post-processing text."""
-
 import re
 
 
 def postprocess_text(input_text: str, pattern: str | None = None, keep_before: bool = True) -> str:
-    """
-    Cleans text by removing or splitting based on structured delimiters using a regex pattern.
+    """Cleans text by removing or splitting based on structured delimiters using a regex pattern.
 
     The default pattern detects:
     - `<| ... |>`: Matches anything inside `<|` and `|>`, often used in AI outputs.

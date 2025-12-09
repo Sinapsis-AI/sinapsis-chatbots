@@ -9,15 +9,15 @@ class DatabaseConfig(BaseModel):
     """Database connection attributes.
 
     Attributes:
-        - user (str): The username for connecting to the PostgreSQL database.
-        - password (str): The password for the database user.
+        - user (str | None): The username for connecting to the PostgreSQL database.
+        - password (str | None): The password for the database user.
         - port (int): The port to connect to the PostgreSQL database.
         - host (str): The host where the PostgreSQL database is running.
         - db_name (str): The name of the database to connect to or create.
     """
 
-    user: str
-    password: str
+    user: str | None = None
+    password: str | None = None
     port: int = 5432
     host: str = "localhost"
     db_name: str = "sinapsis_db"

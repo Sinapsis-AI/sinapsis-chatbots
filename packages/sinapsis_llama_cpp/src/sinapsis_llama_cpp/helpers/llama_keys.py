@@ -6,9 +6,7 @@ from pydantic.dataclasses import dataclass
 
 @dataclass
 class LLaMAModelKeys:
-    """
-    A class to hold constants for the keys used in LLama init method.
-    """
+    """A class to hold constants for the keys used in LLama init method."""
 
     llm_model_name: Literal["llm_model_name"] = "llm_model_name"
     llm_model_file: Literal["llm_model_file"] = "llm_model_file"
@@ -27,3 +25,4 @@ class LLaMAModelKeys:
     messages: Literal["messages"] = "messages"
     chatml: Literal["chatml"] = "chatml"
     chatml_function_calling: Literal["chatml-function-calling"] = "chatml-function-calling"
+    delta: Literal["delta"] = "delta"

@@ -9,9 +9,7 @@ from sinapsis_chatbots_base.templates.query_contextualize import (
 
 
 class QueryContextualizeFromFile(QueryContextualize):
-    """A subclass of QueryContextualize that retrieves context from files loaded into
-    the `generic_data`
-    of a DataContainer.
+    """A subclass of QueryContextualize that retrieves context from files loaded into the `generic_data`.
 
     This class overrides the `retrieve_context` method to provide context retrieval
     from data files that have been previously read and stored in the `generic_data`
@@ -27,8 +25,7 @@ class QueryContextualizeFromFile(QueryContextualize):
     """
 
     class AttributesBaseModel(QueryContextualize.AttributesBaseModel):
-        """This class extends the AttributesBaseModel of the parent
-        `QueryContextualize`.
+        """This class extends the AttributesBaseModel of the parent `QueryContextualize`.
 
         Attributes:
             keywords (list[str]): A list of keywords to be used for retrieving context.
@@ -39,8 +36,7 @@ class QueryContextualizeFromFile(QueryContextualize):
         generic_keys: list[str]
 
     def retrieve_context(self, keyword: str, context_data: dict | Any) -> str:
-        """Retrieve the context associated with the given keyword from the provided
-        context data.
+        """Retrieve the context associated with the given keyword from the provided context data.
 
         This method first checks if the `keyword` exists in the `generic_keys` attribute
          of the current instance.
@@ -74,15 +70,14 @@ class QueryContextualizeFromFile(QueryContextualize):
         return ""
 
     def add_context_to_content(self, kwd: str, container: DataContainer) -> str:
-        """
-        Depending on the keyword, append the additional context to the current one
+        """Depending on the keyword, append the additional context to the current one.
+
         Args:
              kwd (str): kwd to be added in the context
              container (DataContainer): Container where additional context comes from
         Returns:
             str : The updated context
         """
-
         context = self.retrieve_context(kwd, container.generic_data) + "\n"
 
         return context

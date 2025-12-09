@@ -10,8 +10,7 @@ from sinapsis_mem0.templates.mem0_base import Mem0Base, Mem0BaseAttributes
 
 @dataclass(frozen=True)
 class EnclosureFormats:
-    """
-    String templates for formatting memory/context injection into prompts for LLMs.
+    """String templates for formatting memory/context injection into prompts for LLMs.
 
     Attributes:
         plain (str):   Memories and query are inserted with a simple newline separator.

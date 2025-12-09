@@ -6,8 +6,7 @@ from pydantic.dataclasses import dataclass
 
 @dataclass
 class LLMChatKeys:
-    """
-    A class to hold constants for the keys used in chat interactions with an LLM (Large Language Model).
+    """A class to hold constants for the keys used in chat interactions with an LLM (Large Language Model).
 
     These keys represent the standard fields in a chat interaction, such as the role of the participant
     and the content of the message. They are typically used when constructing input messages or
@@ -26,6 +25,13 @@ class LLMChatKeys:
 
 @dataclass
 class MCPKeys:
+    """Holds constants for keys used in the Model Context Protocol (MCP) template.
+
+    These keys define the standardized structure for messages involving tool definitions
+    (tools), requests from the model to use tools (tool_use, tool_calls), and
+    the corresponding results provided back to the model (tool_results).
+    """
+
     tools: Literal["tools"] = "tools"
     tool_use: Literal["tool_use"] = "tool_use"
     tool_results: Literal["tool_results"] = "tool_results"

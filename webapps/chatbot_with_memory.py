@@ -99,7 +99,7 @@ class ChatbotWithMem0(BaseChatbot):
         self.clear_user_memories(user_id, session_state)
         gr.Info("Your memories have been deleted successfully!")
 
-    def _add_buttons(self, chat_components: ChatInterfaceComponents):
+    def _add_buttons(self, chat_components: ChatInterfaceComponents) -> None:
         """Extends the parent method by adding one additional button to handle memories deletion.
 
         Args:
@@ -117,7 +117,6 @@ class ChatbotWithMem0(BaseChatbot):
             user_id (str): Unique user identifier for filtering and associating memory records.
             session_id (str | None, optional): Optional session ID to scope memory to a particular interaction session.
         """
-
         mem_kwargs = {"user_id": user_id}
         if self.use_managed and session_id:
             mem_kwargs["run_id"] = session_id

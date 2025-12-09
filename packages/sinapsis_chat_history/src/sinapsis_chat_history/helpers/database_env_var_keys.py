@@ -6,9 +6,7 @@ from sinapsis_core.utils.env_var_keys import EnvVarEntry, doc_str, return_docs_f
 
 
 class _DatabaseEnvVars(BaseModel):
-    """
-    Env vars for OpenAI
-    """
+    """Environment variables required for database connections."""
 
     DB_USER: EnvVarEntry = EnvVarEntry(
         var_name="DB_USER",
@@ -44,7 +42,18 @@ __doc__ = doc_str
 
 
 def __getattr__(name: str) -> Any:
-    """to use as an import, when updating the value is not important"""
+    """Allows accessing environment variable default values directly as module attributes.
+
+    Args:
+        name (str): The name of the environment variable.
+
+    Raises:
+        AttributeError: If the requested attribute `name` is not a defined
+                        environment variable.
+
+    Returns:
+        Any: The default value of the requested environment variable.
+    """
     if name in DatabaseEnvVars.model_fields:
         return DatabaseEnvVars.model_fields[name].default.value
 

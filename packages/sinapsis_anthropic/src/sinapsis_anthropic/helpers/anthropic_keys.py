@@ -6,15 +6,11 @@ from pydantic.dataclasses import dataclass
 
 @dataclass
 class AnthropicKeys:
-    """
-    A class to hold constants for the keys used in Anthropic message create method.
-    """
+    """A class to hold constants for the keys used in Anthropic message create method."""
 
     model: Literal["model"] = "model"
-    max_tokens: Literal["max_tokens"] = "max_tokens"
     messages: Literal["messages"] = "messages"
     system: Literal["system"] = "system"
-    temperature: Literal["temperature"] = "temperature"
     tools: Literal["tools"] = "tools"
     name: Literal["name"] = "name"
     web_search: Literal["web_search"] = "web_search"
@@ -22,7 +18,6 @@ class AnthropicKeys:
     type: Literal["type"] = "type"
     text: Literal["text"] = "text"
     thinking: Literal["thinking"] = "thinking"
-    budget_tokens: Literal["budget_tokens"] = "budget_tokens"
     enabled: Literal["enabled"] = "enabled"
     image: Literal["image"] = "image"
     document: Literal["document"] = "document"

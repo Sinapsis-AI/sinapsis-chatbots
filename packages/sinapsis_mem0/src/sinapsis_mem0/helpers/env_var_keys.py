@@ -23,7 +23,18 @@ __doc__ = doc_str
 
 
 def __getattr__(name: str) -> Any:
-    """to use as an import, when updating the value is not important"""
+    """Allows accessing environment variable default values directly as module attributes.
+
+    Args:
+        name (str): The name of the environment variable.
+
+    Raises:
+        AttributeError: If the requested attribute `name` is not a defined
+                        environment variable.
+
+    Returns:
+        Any: The default value of the requested environment variable.
+    """
     if name in Mem0EnvVars.model_fields:
         return Mem0EnvVars.model_fields[name].default.value
 

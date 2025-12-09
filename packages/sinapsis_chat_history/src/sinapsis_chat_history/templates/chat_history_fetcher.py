@@ -71,7 +71,8 @@ class ChatHistoryFetcher(ChatHistoryBase):
 
     @staticmethod
     def process_query(columns: str, rows: list, return_type: RETURN_TYPE) -> list[dict]:
-        """Formats the query to add the container
+        """Formats the query to add the container.
+
         Args:
             columns (str): columns to be added as keys in the dictionary
             rows (list): list of results from the query

@@ -13,7 +13,7 @@ from sinapsis_chat_history.helpers.base_provider import BaseStorageProvider, Dat
 class PostgresDatabaseConfig(DatabaseConfig):
     """Configuration of the postgres table."""
 
-    columns: dict[str, str] = {  # noqa: RUF012.
+    columns: dict[str, str] = {  # noqa: RUF012
         "id": "SERIAL PRIMARY KEY",
         "user_id": "TEXT NOT NULL",
         "role": "TEXT NOT NULL",
@@ -47,7 +47,12 @@ class PostgresStorageProvider(BaseStorageProvider):
             f"host={self.config.host} port={self.config.port} user={self.config.user} password={self.config.password}"
         )
 
-    def _get_connection_to_db_str(self):
+    def _get_connection_to_db_str(self) -> str:
+        """Generates the full PostgreSQL connection string including the specific database name.
+
+        Returns:
+            str: The complete PostgreSQL connection string ready for connection.
+        """
         return f"{self._get_connection_string()} dbname={self.config.db_name}"
 
     def initialize(self) -> None:

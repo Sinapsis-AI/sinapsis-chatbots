@@ -3,6 +3,8 @@ from enum import Enum
 
 
 class Tags(Enum):
+    """Tags for LLM templates."""
+
     ANTHROPIC = "anthropic"
     CHATBOTS = "chatbots"
     CODE = "code"
@@ -27,3 +29,4 @@ class Tags(Enum):
     QUERY_CONTEXTUALIZATION = "query_contextualization"
     VECTORS = "vectors"
     MCP = "mcp"
+    STREAMING = "streaming"

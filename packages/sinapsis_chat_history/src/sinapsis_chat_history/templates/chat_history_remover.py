@@ -34,6 +34,5 @@ class ChatHistoryRemover(ChatHistoryBase):
         Returns:
             DataContainer: The same container passed in, unmodified.
         """
-
         self.db.remove_last_n(self.attributes.last_n, condition=self.attributes.filters)
         return container

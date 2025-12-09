@@ -119,8 +119,7 @@ class LLama4TextToText(LLMTextCompletionBase):
         self._clear_context()
 
     def infer(self, text: str | list) -> str | None:
-        """
-        Specific method to apply a chat template before using the get_response method
+        """Specific method to apply a chat template before using the get_response method
 
         Args:
             text (str | list): text to be processed by the llm
@@ -135,8 +134,9 @@ class LLama4TextToText(LLMTextCompletionBase):
 
     @staticmethod
     def process_packets(messages: list, container: DataContainer) -> list:
-        """abstract method for processing extra packets in the DataContainer
-        before passing the message to the llm"""
+        """Abstract method for processing extra packets in the DataContainer
+        before passing the message to the llm
+        """
         _ = container
         return messages
 

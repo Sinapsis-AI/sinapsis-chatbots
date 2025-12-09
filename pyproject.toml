@@ -1,43 +1,45 @@
 [project]
 name = "sinapsis-chatbots"
-version = "0.5.1"
+version = "0.5.8"
 description = "Mono repo with packages for text completion tasks"
 authors = [
     {name = "SinapsisAI", email = "dev@sinapsis.tech"},
 ]
 readme = "README.md"
 license-files = ["LICENSE"]
+requires-python = ">=3.10"
 dependencies = [
     "sinapsis>=0.1.1",
 ]
-
 
 [dependency-groups]
 dev = [
     "ruff>=0.8.3",
     "pre-commit>=4.0.1",
 ]
+
 [project.optional-dependencies]
 gradio-app = [
     "sinapsis[webapp]>=0.2.2",
 ]
 
-
-
 all = [
-    "sinapsis-chatbots[gradio-app]",
-    "sinapsis-chat-history[all]",
-    "sinapsis-llama-cpp[all]",
-    "sinapsis-chatbots-base[all]",
-    "sinapsis-llama-index[all]",
     "sinapsis-anthropic[all]",
+    "sinapsis-chat-history[all]",
+    "sinapsis-chatbots[gradio-app]",
+    "sinapsis-chatbots-base[all]",
+    "sinapsis-llama-cpp[all]",
+    "sinapsis-llama-index[all]",
     "sinapsis-mem0[all]",
 ]
 chatbot-app = [
     "sinapsis[webapp]>=0.2.15",
 ]
 chatbot = [
-    "sinapsis-langchain-readers[langchain-pdfs-readers,langchain-wikipedia-readers]>=0.1.5",
+    "sinapsis-langchain-readers[langchain-pdfs-readers]>=0.1.4",
+    "sinapsis-langchain-readers[langchain-wikipedia-readers]>=0.1.4",
+    "sinapsis-langchain-readers[langchain-productivity-tools]>=0.1.4",
+    "sinapsis-openai>=0.1.9",
 ]
 
 [tool.uv.workspace]
@@ -47,23 +49,13 @@ exclude = ["packages/*.egg-info"]
 [tool.setuptools]
 packages = { find = { where = ["packages"] } }
 
-
-[[tool.uv.index]]
-url = "https://pypi.sinapsis.tech/"
-
-[tool.uv.sources]
-sinapsis-chatbots-base = { workspace = true }
-sinapsis-chat-history = {workspace = true}
-sinapsis-llama-cpp = { workspace = true }
-sinapsis-llama-index = { workspace = true }
-sinapsis-anthropic = { workspace = true }
-sinapsis-mem0 = { workspace = true }
-
 [tool.ruff]
 lint.select = [
     "ARG",
+    "ANN",
     "BLE",
     "C4",
+    "D",
     "E",
     "F",
     "FIX",
@@ -71,6 +63,7 @@ lint.select = [
     "I",
     "PERF",
     "PIE",
+    "PLR6301",
     "RUF",
     "RSE",
     "SIM",
@@ -79,10 +72,33 @@ lint.select = [
     "T20",
     "TD",
     "TID",
+    "UP",
+    "W",
+]
+lint.preview = true
+lint.pydocstyle.convention = "google"
+lint.ignore = [
+    "ANN401",
+    "D100",
+    "D104",
+    "D107"
 ]
 line-length = 120
+show-fixes = true
+target-version = "py310"
+fix = true
 
+[[tool.uv.index]]
+name = 'sinapsis'
+url = "https://pypi.sinapsis.tech/"
 
+[tool.uv.sources]
+sinapsis-anthropic = { workspace = true }
+sinapsis-chat-history = {workspace = true}
+sinapsis-chatbots-base = { workspace = true }
+sinapsis-llama-cpp = { workspace = true }
+sinapsis-llama-index = { workspace = true }
+sinapsis-mem0 = { workspace = true }
 
 [project.urls]
 Homepage = "https://sinapsis.tech"

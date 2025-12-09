@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-anthropic"
-version = "0.1.2"
+version = "0.1.6"
 description = "Package with templates for AI-driven chatbots using Anthropic's Claude models"
 authors = [
     {name = "SinapsisAI", email = "dev@sinapsis.tech"},
@@ -11,7 +11,16 @@ license-files = ["LICENSE"]
 dependencies = [
     "anthropic>=0.51.0",
     "sinapsis>=0.2.10",
-    "sinapsis-chatbots-base[all]",
+    "sinapsis-chatbots-base",
+    "sinapsis-generic-data-tools[pillow]>=0.1.10",
+]
+
+[project.optional-dependencies]
+chatbot = [
+    "sinapsis-chatbots-base[chatbot]>=0.1.8",
+]
+all = [
+    "sinapsis-anthropic[chatbot]",
 ]
 
 [dependency-groups]
@@ -23,8 +32,10 @@ dev = [
 [tool.ruff]
 lint.select = [
     "ARG",
+    "ANN",
     "BLE",
     "C4",
+    "D",
     "E",
     "F",
     "FIX",
@@ -32,6 +43,7 @@ lint.select = [
     "I",
     "PERF",
     "PIE",
+    "PLR6301",
     "RUF",
     "RSE",
     "SIM",
@@ -39,10 +51,25 @@ lint.select = [
     "T10",
     "T20",
     "TD",
+    "TID",
+    "UP",
+    "W",
+]
+lint.preview = true
+lint.pydocstyle.convention = "google"
+lint.ignore = [
+    "ANN401",
+    "D100",
+    "D104",
+    "D107"
 ]
 line-length = 120
+show-fixes = true
+target-version = "py310"
+fix = true
 
 [[tool.uv.index]]
+name = 'sinapsis'
 url = "https://pypi.sinapsis.tech/"
 
 [tool.uv.sources]
@@ -58,11 +85,3 @@ Homepage = "https://sinapsis.tech"
 Documentation = "https://docs.sinapsis.tech/docs"
 Tutorials = "https://docs.sinapsis.tech/tutorials"
 Repository = "https://github.com/Sinapsis-AI/sinapsis-chatbots.git"
-
-[project.optional-dependencies]
-chatbot = [
-    "sinapsis-data-readers[all]>=0.1.8",
-]
-all = [
-    "sinapsis-anthropic[chatbot]",
-]

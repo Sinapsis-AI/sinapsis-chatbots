@@ -1,19 +1,25 @@
 [project]
 name = "sinapsis-llama-cpp"
-version = "0.3.7"
-description = "Package with templates using the LLama-CPP library LLM text completion"
+version = "0.3.13"
+description = "Sinapsis templates for LLM text completion with LLaMA-CPP"
+authors = [
+    {name = "SinapsisAI", email = "dev@sinapsis.tech"},
+]
 readme = "README.md"
 requires-python = ">=3.10"
-license-files=["LICENSE"]
+license-files = ["LICENSE"]
 dependencies = [
     "huggingface-hub>=0.32.4",
-    "llama-cpp-python==0.3.8",
+    "llama-cpp-python>=0.3.8",
     "llama-index-llms-llama-cpp>=0.4.0",
     "ninja>=1.11.1.3",
+    "pillow>=11.3.0",
     "sinapsis>=0.1.1",
     "sinapsis-chatbots-base",
 ]
+
 [dependency-groups]
+
 dev = [
     "ruff>=0.8.3",
     "pre-commit>=4.0.1",
@@ -23,21 +29,25 @@ dev = [
 
 chatbot = [
     "llvmlite>=0.44.0",
-    "sinapsis-chatbots-base[all]"
+    "sinapsis-chatbots-base[chatbot]"
 ]
 
-all =["sinapsis-llama-cpp[chatbot]", "sinapsis-llama-cpp[llama-four]"]
 llama-four = [
-    "transformers>=4.51.0",
+    "transformers[torch-vision]>=4.51.0",
 ]
 
-
+all = [
+    "sinapsis-llama-cpp[chatbot]",
+    "sinapsis-llama-cpp[llama-four]"
+]
 
 [tool.ruff]
 lint.select = [
     "ARG",
+    "ANN",
     "BLE",
     "C4",
+    "D",
     "E",
     "F",
     "FIX",
@@ -45,6 +55,7 @@ lint.select = [
     "I",
     "PERF",
     "PIE",
+    "PLR6301",
     "RUF",
     "RSE",
     "SIM",
@@ -52,24 +63,34 @@ lint.select = [
     "T10",
     "T20",
     "TD",
+    "TID",
+    "UP",
+    "W",
+]
+lint.preview = true
+lint.pydocstyle.convention = "google"
+lint.ignore = [
+    "ANN401",
+    "D100",
+    "D104",
+    "D107"
 ]
 line-length = 120
+show-fixes = true
+target-version = "py310"
+fix = true
 
 [[tool.uv.index]]
 name = 'sinapsis'
 url = "https://pypi.sinapsis.tech/"
 
 [[tool.uv.index]]
-name = "llama-cpp-python"
-url = "https://abetlen.github.io/llama-cpp-python/whl/cu124/"
-
-[[tool.uv.index]]
-name = "llama-index-llms-llama-cpp"
+name = 'llama-cpp-python'
 url = "https://abetlen.github.io/llama-cpp-python/whl/cu124/"
 
 [tool.uv.sources]
 sinapsis-chatbots-base = { workspace = true }
-
+llama-cpp-python = { index = "llama-cpp-python"}
 
 [build-system]
 requires = ["setuptools"]

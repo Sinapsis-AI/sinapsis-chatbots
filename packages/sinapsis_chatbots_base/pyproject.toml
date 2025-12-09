@@ -1,13 +1,32 @@
 [project]
 name = "sinapsis-chatbots-base"
-version = "0.1.8"
-description = "Package with base functionality for llm text creation"
+version = "0.1.11"
+description = "Sinapsis base templates for LLM text completion."
+authors = [
+    {name = "SinapsisAI", email = "dev@sinapsis.tech"},
+]
 readme = "README.md"
 requires-python = ">=3.10"
 license-files = ["LICENSE"]
 dependencies = [
-    "sinapsis>=0.2.0",
+    "sinapsis>=0.2.10",
+    "torch>=2.6.0",
 ]
+
+[project.optional-dependencies]
+
+chatbot = [
+    "sinapsis-data-readers[ffmpeg,opencv,pydub,soundfile]>=0.1.13",
+    "sinapsis-data-writers[opencv]>=0.1.15",
+    "sinapsis-generic-data-tools>=0.1.9",
+    "sinapsis-huggingface-transformers>=0.1.0",
+    "sinapsis-langchain-readers[langchain-pdfs-readers]>=0.1.4",
+    "sinapsis-langchain-readers[langchain-wikipedia-readers]>=0.1.4",
+    "sinapsis-langchain-readers[langchain-productivity-tools]>=0.1.4",
+    "sinapsis[webapp]>=0.2.19",
+]
+
+all = ["sinapsis-chatbots-base[chatbot]"]
 
 [dependency-groups]
 dev = [
@@ -15,12 +34,13 @@ dev = [
     "pre-commit>=4.0.1",
 ]
 
-
 [tool.ruff]
 lint.select = [
     "ARG",
+    "ANN",
     "BLE",
     "C4",
+    "D",
     "E",
     "F",
     "FIX",
@@ -28,6 +48,7 @@ lint.select = [
     "I",
     "PERF",
     "PIE",
+    "PLR6301",
     "RUF",
     "RSE",
     "SIM",
@@ -35,23 +56,26 @@ lint.select = [
     "T10",
     "T20",
     "TD",
+    "TID",
+    "UP",
+    "W",
+]
+lint.preview = true
+lint.pydocstyle.convention = "google"
+lint.ignore = [
+    "ANN401",
+    "D100",
+    "D104",
+    "D107"
 ]
 line-length = 120
+show-fixes = true
+target-version = "py310"
+fix = true
 
 [[tool.uv.index]]
 name = 'sinapsis'
 url = "https://pypi.sinapsis.tech/"
-[project.optional-dependencies]
-
-chatbot = [
-    "sinapsis-data-readers[ffmpeg,opencv,pydub,soundfile]>=0.1.13",
-    "sinapsis-generic-data-tools>=0.1.9",
-    "sinapsis-huggingface-transformers>=0.1.0",
-    "sinapsis-langchain-readers[langchain-pdfs-readers,langchain-wikipedia-readers]>=0.1.4",
-    "sinapsis[webapp]>=0.2.19",
-]
-
-all = ["sinapsis-chatbots-base[chatbot]"]
 
 [build-system]
 requires = ["setuptools"]

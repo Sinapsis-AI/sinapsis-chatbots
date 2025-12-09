@@ -1,46 +1,95 @@
 [project]
 name = "sinapsis-llama-index"
-version = "0.1.7"
-description = "Add your description here"
+version = "0.1.11"
+description = "Sinapsis templates and helpers for LlamaIndex integration."
+authors = [
+    {name = "SinapsisAI", email = "dev@sinapsis.tech"},
+]
 readme = "README.md"
-license-files = ["LICENSE"]
 requires-python = ">=3.10"
+license-files = ["LICENSE"]
 dependencies = [
     "llama-index>=0.12.25",
     "llama-index-embeddings-huggingface>=0.5.2",
     "llama-index-legacy>=0.9.48.post4",
-    "llama-index-llms-llama-cpp>=0.4.0",
+    "llama-index-vector-stores-postgres>=0.4.2",
     "llamaindex-py-client>=0.1.19",
-    "ninja>=1.11.1.3",
+    "psycopg>=3.2.12",
     "sinapsis>=0.2.0",
     "sinapsis-chatbots-base",
-    "sinapsis-llama-cpp",
     "tree-sitter-language-pack>=0.8.0",
 ]
+
+[dependency-groups]
+
+dev = [
+    "ruff>=0.8.3",
+    "pre-commit>=4.0.1",
+]
+
 [project.optional-dependencies]
 
-rag-chatbot = [
-    "einops>=0.8.1",
-    "llama-index-vector-stores-postgres>=0.4.2",
+sinapsis-llama-cpp = [
+    "sinapsis-llama-cpp",
 ]
-all =["sinapsis-llama-cpp[chatbot]", "sinapsis-llama-index[rag-chatbot,xformers]"]
+
+chatbot = [
+    "sinapsis-llama-cpp[chatbot]",
+    "einops>=0.8.1",
+]
+
 xformers = [
     "triton",
     "setuptools>=78.1.0",
     "xformers>=0.0.29.post1",
 ]
 
+all = [
+    "sinapsis-llama-index[chatbot,xformers]"
+]
+
+[tool.ruff]
+lint.select = [
+    "ARG",
+    "ANN",
+    "BLE",
+    "C4",
+    "D",
+    "E",
+    "F",
+    "FIX",
+    "FLY",
+    "I",
+    "PERF",
+    "PIE",
+    "PLR6301",
+    "RUF",
+    "RSE",
+    "SIM",
+    "SLOT",
+    "T10",
+    "T20",
+    "TD",
+    "TID",
+    "UP",
+    "W",
+]
+lint.preview = true
+lint.pydocstyle.convention = "google"
+lint.ignore = [
+    "ANN401",
+    "D100",
+    "D104",
+    "D107"
+]
+line-length = 120
+show-fixes = true
+target-version = "py310"
+fix = true
+
 [[tool.uv.index]]
 name = 'sinapsis'
 url = "https://pypi.sinapsis.tech/"
-
-[[tool.uv.index]]
-name = "llama-cpp"
-url = "https://abetlen.github.io/llama-cpp-python/whl/cu124/"
-
-[[tool.uv.index]]
-name = "llama-index-llms-llama-cpp"
-url = "https://abetlen.github.io/llama-cpp-python/whl/cu124/"
 
 [tool.uv.sources]
 sinapsis-llama-cpp = { workspace = true }

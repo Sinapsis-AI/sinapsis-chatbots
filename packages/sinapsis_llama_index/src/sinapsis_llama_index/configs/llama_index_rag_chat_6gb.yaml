@@ -34,6 +34,8 @@ templates:
     table_name: sinapsis_code_m
     database_dimension: 768
     top_k:  4
+    user: postgres
+    password: password
 - template_name: LLaMARAGTextCompletion
   class_name: LLaMATextCompletion
   template_input: LLaMAIndexNodeRetriever

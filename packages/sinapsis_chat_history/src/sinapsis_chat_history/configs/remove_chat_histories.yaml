@@ -1,9 +1,11 @@
 agent:
   name: my_test_agent
+
 templates:
 - template_name: InputTemplate
   class_name: InputTemplate
   attributes: {}
+
 - template_name: ChatHistoryRemover
   class_name: ChatHistoryRemover
   template_input: InputTemplate
